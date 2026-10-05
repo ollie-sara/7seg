@@ -13,9 +13,14 @@ enum Sounds {
             .map(\.lastPathComponent).sorted()
     }
 
+    /// Everything in `folder`: only the importer writes there, and it already limits picks to audio.
     static var imported: [String] {
-        ((try? FileManager.default.contentsOfDirectory(atPath: folder.path())) ?? [])
-            .filter { extensions.contains(($0 as NSString).pathExtension.lowercased()) }.sorted()
+        ((try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)) ?? [])
+            .map(\.lastPathComponent).sorted()
+    }
+
+    static func delete(_ name: String) {
+        try? FileManager.default.removeItem(at: folder.appending(path: name))
     }
 
     static func url(_ name: String) -> URL? {

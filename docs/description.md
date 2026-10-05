@@ -20,6 +20,7 @@ A small, open-source iOS app for alarms at set times on chosen weekdays. You can
 - Verified on device (spike app, see `spike/README.md`):
   - Sliding Stop can open the app (`stopIntent` with `openAppWhenRun`), even after the app was swiped closed.
   - The system Stop slider, the side button, the volume buttons and swiping the app closed all run our `stopIntent`, and the app can schedule a new alarm from there. The nag loop works.
+  - Found in Phase One testing: with `openAppWhenRun`, a side or volume button press on a locked phone shows the passcode pad, and the intent only runs after unlocking. If the user doesn't unlock, there is no nag. The `stopIntent` therefore starts in the background (`supportedModes: [.background, .foreground(.dynamic)]`), schedules the nag, then calls `continueInForeground` to open the app. *(Needs device verification.)*
   - The app can stop a ringing AlarmKit alarm from inside the app; the sound and the lock-screen alert both go away.
   - An AlarmKit alarm that fires while the app is in the foreground shows only a small banner, not the full-screen alert.
   - AlarmKit plays `.caf`, `.wav`, `.m4a` and imported `.mp3` files, with no conversion. Short sounds loop; a 45 s sound is not cut off at 30 s.
@@ -36,7 +37,7 @@ A small, open-source iOS app for alarms at set times on chosen weekdays. You can
 - Time (hour and minute).
 - Label (optional, default "Alarm"). It is shown on the lock-screen alert.
 - Repeat weekdays. **No days selected = one-shot:** it fires at the next occurrence of that time and then switches itself off.
-- Sound: pick from a set of bundled, freely licensed sounds, or import your own (Files picker, copied into `Library/Sounds` as-is; `.caf`, `.wav`, `.m4a` and `.mp3` all work). Preview plays on tap.
+- Sound: pick from a set of bundled, freely licensed sounds, or import your own (Files picker, copied into `Library/Sounds` as-is; `.caf`, `.wav`, `.m4a` and `.mp3` all work). Preview plays on tap. Swipe an imported sound to delete it; alarms that used it fall back to the default sound.
 - Volume ("Loud mode"): see below.
 - Snooze duration: default 5 min, choices 1–30 min.
 - Max snoozes: default 3, choices 0–10 or unlimited. Once the limit is reached, the in-app Snooze button is hidden and only Stop remains.
@@ -63,6 +64,19 @@ AlarmKit can't set volume, so custom volume needs a second mechanism. Competitor
 - **Assumption:** the phone is plugged in overnight and the app stays open in the background. Loud mode is not designed for a phone on battery with Low Power Mode.
 - If the user swipe-kills the app, the background audio stops, and the alarm falls back to AlarmKit at ringer volume (verified). The app shows a clear warning about this in the Loud mode setting.
 - Downsides: battery drain from the silent keepalive, and App Review risk (guideline 2.5.4 allows background audio only for audible content). Alarm apps with this feature are on the App Store, but this is the part most likely to be rejected.
+
+**Nightstand mode (planned)**
+- When the app is open, the phone is landscape and charging, and at least one alarm is enabled, the app shows a clock face like an old bedside alarm clock.
+- Content: the current time and a small "AL" legend with the next alarm time. Nothing else.
+- OLED power saving: pure black background, dim red digits, no ghost segments, steady colon. The app keeps the screen awake, drops brightness to minimum, and restores it on exit.
+- The clock shifts a few points each minute to prevent burn-in.
+- Exits when the phone is rotated to portrait or unplugged, or on tap. A ringing alarm takes over the screen.
+- Keeping the app in the foreground also makes Loud mode more reliable.
+
+**Settings**
+- Opened from a gear at the top left of the alarm list, as a sheet.
+- Appearance: System (default), Light or Dark. The choice applies to the whole app, including the ringing screen, and is kept across launches. The nightstand face stays black and red whatever the choice.
+- About: the app version. Links to the author and a donation page come later, once the URLs exist.
 
 **Permissions and first run**
 - Ask for AlarmKit authorization on first launch. If it's denied, show a permanent banner explaining that alarms won't ring, with a link to Settings.

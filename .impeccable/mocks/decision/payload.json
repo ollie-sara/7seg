@@ -1,0 +1,119 @@
+{
+  "title": "OpenAlarm visual identity",
+  "question": "All four boards show List (light/dark), Editor, Ringing, Ringing with Phase Two tasks, and Nightstand. Pick a direction, steer it, or re-roll.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "Travel Clock",
+      "kicker": "THE ROLL",
+      "lineage": "1980s Braun LCD travel alarm clocks",
+      "thesis": "The app is the clock's flat plastic body; every time sits in a small reflective LCD window set into it.",
+      "palette": ["#E6E6E2", "#BCC3AC", "#1E2219", "#F2C100", "#111111"],
+      "materials": ["matte plastic body", "reflective LCD window", "one signal yellow = armed"],
+      "viewport": "Large title, one 'Next Mon 06:30 · in 7 h 16 min' line, then rows: LCD window with slanted segment time, label and days, yellow switch.",
+      "risk": "Can tip into Braun pastiche if body textures or knurls creep in; the LCD window per row is the one container the design allows.",
+      "raised": [
+        {"from": "challenger-wayfinding", "raise": "One message only above the list: the next alarm and the time until it."},
+        {"from": "challenger-metro", "raise": "Rows carry no card, divider, or chrome except the LCD window itself."},
+        {"from": "challenger-crouwel", "raise": "Segment stroke width is the base unit: spacing, corner radii, and window inset derive from it."},
+        {"from": "challenger-acetate", "raise": "Two text sizes plus the segment display; hierarchy comes from ink, not size."},
+        {"from": "challenger-streaming", "raise": "Disabled alarms fade toward unlit segments, so on/off reads at a glance."}
+      ],
+      "comp": ".impeccable/mocks/decision/assigned.png"
+    },
+    {
+      "id": "model-pick",
+      "label": "Unlit Glass",
+      "kicker": "IMPECCABLE’S PICK",
+      "lineage": "reflective LCD watch and calculator glass",
+      "thesis": "The whole screen is one unlit LCD; every state is a printed segment that is either inked or ghosted.",
+      "palette": ["#C7CCB6", "#1A1D15", "#474C3D", "#0D0F0C", "#D0D6C3"],
+      "materials": ["grey-green LCD ground", "ghost segments", "annunciator legends (M T W T F S S, LOUD, AL, SNZ)"],
+      "viewport": "Big unboxed segment times on the LCD ground; under each, the label and a fixed weekday annunciator strip with active days inked, inactive ghosted.",
+      "risk": "Most literal reading of the brief and the look most runs would land on; light mode's green ground needs care to keep text contrast at 4.5:1.",
+      "comp": ".impeccable/mocks/decision/model-pick.png"
+    },
+    {
+      "id": "challenger-board",
+      "label": "Departure Board",
+      "verdict": "competitive",
+      "lineage": "rail concourse split-flap boards, rendered in LCD segments",
+      "thesis": "Alarms as a timetable: fixed columns, rows ranked by time, each digit in its own cell, the next alarm called in amber.",
+      "palette": ["#0A0A0A", "#1B1B1B", "#F2F2EE", "#FFB000", "#ECECE8"],
+      "materials": ["digit cells", "ruled rows", "amber call lamp"],
+      "viewport": "Column heads TIME / ALARM / ON, then ruled rows of celled digits; the next alarm has an amber lamp and 'NEXT · 7 H 16 MIN'.",
+      "case": "Fuses cleanly: an alarm list is literally a time-ranked board, and the call lamp makes 'next' unmistakable. Loses on audience: transit, not bedroom.",
+      "risk": "Fixed columns get tight at large Dynamic Type sizes and with long labels in other languages.",
+      "comp": ".impeccable/mocks/decision/challenger-board.png",
+      "hero": "https://impeccable.style/worlds/cards/signals-instruments-split-flap-concourse-hero.webp"
+    },
+    {
+      "id": "challenger-wayfinding",
+      "label": "Terminal Yellow Wayfinding",
+      "verdict": "declined",
+      "lineage": "airport sign systems",
+      "palette": ["#FFC917", "#111111", "#FFFFFF"],
+      "materials": ["yellow sign bands", "monumental numbers"],
+      "case": "Saturated yellow glares in a dark bedroom; sleepers do not identify with airports.",
+      "kept": "One message per band: the next decision only.",
+      "hero": "https://impeccable.style/worlds/cards/wayfinding-cartography-signage-terminal-yellow-wayfinding-hero.webp"
+    },
+    {
+      "id": "challenger-metro",
+      "label": "Metro Typographic Tiles",
+      "verdict": "declined",
+      "lineage": "Windows Phone metro",
+      "palette": ["#000000", "#00ABA9", "#FFFFFF"],
+      "materials": ["flat tiles", "giant lowercase"],
+      "case": "Tiles add color fields with no job; reads as a dated phone OS.",
+      "kept": "Chrome deleted so the type itself is the interface.",
+      "hero": "https://impeccable.style/worlds/cards/digital-design-canon-metro-typographic-tiles-hero.webp"
+    },
+    {
+      "id": "challenger-crouwel",
+      "label": "Crouwel Grid Specimen",
+      "verdict": "declined",
+      "lineage": "Wim Crouwel gridded type",
+      "palette": ["#FFFFFF", "#1A47D6", "#111111"],
+      "materials": ["visible construction grid"],
+      "case": "Visible grid lines are decoration without a job, against the brief.",
+      "kept": "Letterforms and layout built from the same grid tokens.",
+      "hero": "https://impeccable.style/worlds/cards/crouwel-grid-specimen-hero.webp"
+    },
+    {
+      "id": "challenger-acetate",
+      "label": "Acetate Manual",
+      "verdict": "declined",
+      "lineage": "boxed-software reference manuals",
+      "palette": ["#E8E4D8", "#F2A900", "#C2410C"],
+      "materials": ["acetate leaves", "tab rail"],
+      "case": "Layered leaves and tabs add depth an alarm list never needs.",
+      "kept": "One size does the work; rank comes from layer, not scale.",
+      "hero": "https://impeccable.style/worlds/cards/rw-manual-acetate-tab-board-hero.webp"
+    },
+    {
+      "id": "challenger-streaming",
+      "label": "Streaming Title Wall",
+      "verdict": "declined",
+      "lineage": "streaming catalog rows",
+      "palette": ["#141414", "#E50914", "#FFFFFF"],
+      "materials": ["poster tiles", "focus dimming"],
+      "case": "Alarms have no artwork; horizontal rails hide alarms off screen.",
+      "kept": "The item that matters grows; everything else steps back.",
+      "hero": "https://impeccable.style/worlds/cards/pop-culture-shelf-streaming-title-card-wall-hero.webp"
+    }
+  ],
+  "reroll": { "registers": ["safer", "bolder"] },
+  "buildPath": { "value": "code" },
+  "canon": true,
+  "canonCard": {
+    "label": "Clock app, played straight",
+    "thesis": "What the category ships: system grouped lists, thin rounded digits, orange tint, no segment display.",
+    "palette": ["#F2F2F7", "#FFFFFF", "#000000", "#FF9500"],
+    "materials": ["system grouped list", "SF Rounded thin digits"],
+    "viewport": "Apple Clock's alarm list at full craft.",
+    "risk": "Indistinguishable from Apple Clock and ignores the 7-segment brief.",
+    "comp": ".impeccable/mocks/decision/canon.png"
+  },
+  "steer": true
+}

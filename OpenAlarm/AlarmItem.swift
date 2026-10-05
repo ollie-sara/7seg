@@ -19,6 +19,9 @@ struct AlarmItem: Codable, Identifiable, Equatable {
 
     var title: String { label.isEmpty ? "Alarm" : label }
 
+    /// Today at the alarm's hour and minute, for formatting and the time picker.
+    var timeOfDay: Date { Calendar.current.date(from: DateComponents(hour: hour, minute: minute))! }
+
     /// Next time this alarm rings strictly after `date`.
     func nextFire(after date: Date, calendar: Calendar = .current) -> Date {
         let weekdays: [Int?] = days.isEmpty ? [nil] : days.map { $0 }

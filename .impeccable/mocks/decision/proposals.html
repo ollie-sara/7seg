@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenAlarm Proposals</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #2E2E2C; font-family: -apple-system, "SF Pro Text", system-ui, sans-serif; color: #D8D8D4; -webkit-font-smoothing: antialiased; }
+  .board { padding: 40px; }
+  .board + .board { border-top: 1px solid #444; }
+  .board h1 { font: 600 28px/1.2 -apple-system, system-ui; color: #F2F2EE; margin-bottom: 4px; }
+  .board h1 + p { font-size: 16px; color: #A8A8A3; margin-bottom: 28px; }
+  .row { display: flex; gap: 40px; align-items: flex-start; }
+  .row + .row { margin-top: 36px; }
+  figure { display: flex; flex-direction: column; gap: 12px; }
+  figcaption { font-size: 15px; color: #BDBDB8; }
+  figcaption b { color: #F2F2EE; font-weight: 600; }
+
+  /* phone */
+  .phone { width: 390px; height: 844px; border-radius: 54px; overflow: hidden; position: relative;
+    background: var(--bg); color: var(--ink); box-shadow: 0 0 0 10px #111, 0 0 0 11px #555; }
+  .phone.land { width: 844px; height: 390px; }
+  .sb { height: 54px; display: flex; justify-content: space-between; align-items: center; padding: 14px 34px 0 44px; font: 600 16px -apple-system, system-ui; }
+  .bat { width: 26px; height: 12px; border: 1.5px solid currentColor; border-radius: 4px; padding: 1.5px; opacity: .9; }
+  .bat i { display: block; height: 100%; width: 70%; background: currentColor; border-radius: 1.5px; }
+  .home { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 134px; height: 5px; border-radius: 3px; background: var(--ink); opacity: .85; }
+  .island { position: absolute; top: 11px; left: 50%; transform: translateX(-50%); width: 124px; height: 36px; border-radius: 20px; background: #000; }
+
+  .nav { display: flex; justify-content: space-between; align-items: center; padding: 6px 20px 0; height: 44px; }
+  .plus { width: 36px; height: 36px; border-radius: 18px; display: grid; place-items: center; font: 400 26px/1 -apple-system, system-ui, sans-serif; color: var(--tint); background: var(--chip); }
+  .lt { font: 700 34px/1.1 -apple-system, system-ui; letter-spacing: .2px; padding: 4px 20px 0; }
+  .next { padding: 6px 20px 18px; font-size: 15px; color: var(--ink2); }
+  .next b { color: var(--ink); font-weight: 600; }
+
+  /* switch */
+  .sw { width: 51px; height: 31px; border-radius: 16px; background: var(--swOff); position: relative; flex: none; }
+  .sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; border-radius: 50%; background: var(--knob, #fff); box-shadow: 0 2px 4px rgba(0,0,0,.2); }
+  .sw.on { background: var(--swOn); }
+  .sw.on::after { left: 22px; }
+
+  .seg { display: inline-flex; align-items: flex-end; }
+  .muted { opacity: .34; }
+  .small { font-size: 13px; color: var(--ink2); }
+  .label { font: 600 17px -apple-system, system-ui; }
+  .sub { font-size: 15px; color: var(--ink2); }
+
+  /* editor (shared skeleton) */
+  .sheet-nav { display: flex; justify-content: space-between; align-items: center; height: 52px; padding: 0 20px; font-size: 17px; }
+  .sheet-nav .t { font-weight: 600; }
+  .sheet-nav .a { color: var(--tint); }
+  .sheet-nav .s { color: var(--tint); font-weight: 600; }
+  .wheel { height: 156px; display: flex; justify-content: center; gap: 46px; position: relative; margin: 2px 16px 14px; }
+  .wheel::before { content: ""; position: absolute; left: 0; right: 0; top: 57px; height: 42px; border-radius: 10px; background: var(--chip); }
+  .wheel .col { position: relative; display: flex; flex-direction: column; align-items: center; font: 400 22px/31px -apple-system, system-ui; font-variant-numeric: tabular-nums; }
+  .wheel .col span:nth-child(1), .wheel .col span:nth-child(5) { opacity: .25; font-size: 18px; }
+  .wheel .col span:nth-child(2), .wheel .col span:nth-child(4) { opacity: .5; }
+  .wheel .col span:nth-child(3) { font-size: 24px; font-weight: 500; line-height: 32px; margin: 5px 0; }
+  .grp { margin: 0 16px 18px; border-radius: var(--gr, 12px); background: var(--panel); }
+  .gh { margin: 0 32px 7px; font-size: 13px; color: var(--ink2); text-transform: var(--ghTransform, uppercase); letter-spacing: var(--ghTrack, .3px); }
+  .cell { min-height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; font-size: 17px; }
+  .cell + .cell { box-shadow: inset 0 1px 0 var(--rule); }
+  .cell .v { color: var(--ink2); }
+  .days { display: flex; gap: 6px; padding: 4px 0 2px; }
+  .day { width: 40px; height: 36px; display: grid; place-items: center; font: 600 15px -apple-system, system-ui; border-radius: var(--dayR, 8px); background: var(--dayOff); color: var(--ink); }
+  .day.on { background: var(--dayOn); color: var(--dayOnInk); }
+  .slider { flex: 1; height: 4px; border-radius: 2px; background: var(--swOff); margin-left: 16px; position: relative; }
+  .slider i { position: absolute; left: 0; top: 0; bottom: 0; width: 80%; border-radius: 2px; background: var(--swOn); }
+  .slider b { position: absolute; left: 80%; top: 50%; width: 26px; height: 26px; transform: translate(-50%,-50%); border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+
+  /* ringing */
+  .ring { position: absolute; inset: 54px 0 0; display: flex; flex-direction: column; padding: 0 22px 44px; }
+  .btn { height: 64px; border-radius: var(--btnR, 16px); display: flex; flex-direction: column; align-items: center; justify-content: center; font: 600 20px -apple-system, system-ui; }
+  .btn small { font: 400 14px -apple-system, system-ui; opacity: .75; margin-top: 2px; }
+  .btn + .btn { margin-top: 12px; }
+  .tall { height: 84px; }
+
+  /* nightstand */
+  .stand { position: absolute; inset: 0; background: #000; display: grid; place-items: center; }
+  .ann { position: absolute; font: 600 13px/1 -apple-system, system-ui; letter-spacing: 1px; }
+</style>
+</head>
+<body>
+<div id="out"></div>
+<script>
+/* ---------- 7-segment glyphs ---------- */
+const MAP = { '0':'abcdef','1':'bc','2':'abged','3':'abgcd','4':'fgbc','5':'afgcd','6':'afgedc','7':'abc','8':'abcdefg','9':'abcdfg','-':'g',' ':'' };
+
+function polys(W, H, T) {
+  const g = T * 0.14, h2 = T / 2;
+  const hz = (y) => { const x0 = h2 + g, x1 = W - h2 - g;
+    return [[x0,y],[x0+h2,y-h2],[x1-h2,y-h2],[x1,y],[x1-h2,y+h2],[x0+h2,y+h2]]; };
+  const vt = (x, y0, y1) => [[x,y0],[x+h2,y0+h2],[x+h2,y1-h2],[x,y1],[x-h2,y1-h2],[x-h2,y0+h2]];
+  const top = h2, mid = H / 2, bot = H - h2, L = h2, R = W - h2;
+  return { a: hz(top), g: hz(mid), d: hz(bot),
+    f: vt(L, top + g, mid - g), b: vt(R, top + g, mid - g),
+    e: vt(L, mid + g, bot - g), c: vt(R, mid + g, bot - g) };
+}
+const pts = (p) => p.map(([x,y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
+
+/** str like "06:30"; o = { h, t (thickness ratio), skew (deg), ink, ghost (or null), colonOff } */
+function seg(str, o) {
+  const H = o.h, T = Math.max(2, H * o.t), W = H * (o.w || 0.54), k = Math.tan((o.skew || 0) * Math.PI / 180);
+  const slant = H * k, gap = T * 0.75;
+  let x = 0, body = '';
+  for (const ch of str) {
+    if (ch === ':') {
+      const cw = T * 1.6, cx = x + cw / 2;
+      const fill = o.colonOff ? (o.ghost || 'transparent') : o.ink;
+      body += `<rect x="${cx - T/2}" y="${H*0.3 - T/2}" width="${T}" height="${T}" fill="${fill}"/><rect x="${cx - T/2}" y="${H*0.7 - T/2}" width="${T}" height="${T}" fill="${fill}"/>`;
+      x += cw + gap; continue;
+    }
+    const P = polys(W, H, T), on = MAP[ch] ?? '';
+    body += `<g transform="translate(${x},0)">`;
+    for (const s of 'abcdefg') {
+      const lit = on.includes(s);
+      if (!lit && !o.ghost) continue;
+      body += `<polygon points="${pts(P[s])}" fill="${lit ? o.ink : o.ghost}"/>`;
+    }
+    body += `</g>`;
+    x += W + gap;
+  }
+  x -= gap;
+  return `<svg class="seg" width="${(x + slant).toFixed(1)}" height="${H}" viewBox="0 0 ${(x + slant).toFixed(1)} ${H}" aria-hidden="true"><g transform="translate(${slant},0) skewX(${-(o.skew||0)})">${body}</g></svg>`;
+}
+
+/* ---------- shared data (synthetic demo content) ---------- */
+const ALARMS = [
+  { t: '06:30', label: 'Work', days: [1,1,1,1,1,0,0], sum: 'Weekdays', on: true, next: true },
+  { t: '07:45', label: 'Gym', days: [0,0,0,0,0,1,0], sum: 'Sat', on: true, loud: true },
+  { t: '09:15', label: 'Alarm', days: null, sum: 'Once', on: false },
+  { t: '22:40', label: 'Take meds', days: [1,1,1,1,1,1,1], sum: 'Every day', on: true },
+];
+const DL = ['M','T','W','T','F','S','S'];
+const sb = () => `<div class="island"></div><div class="sb"><span>23:14</span><span class="bat"><i></i></span></div>`;
+const home = `<div class="home"></div>`;
+const sw = (on) => `<span class="sw ${on ? 'on' : ''}"></span>`;
+const wheel = `<div class="wheel"><div class="col"><span>04</span><span>05</span><span>06</span><span>07</span><span>08</span></div><div class="col"><span>28</span><span>29</span><span>30</span><span>31</span><span>32</span></div></div>`;
+
+function editor(D, mode) {
+  const th = D.themes[mode];
+  return `${sb()}
+    <div class="sheet-nav"><span class="a">Cancel</span><span class="t">Edit Alarm</span><span class="s">Save</span></div>
+    ${D.editorTop ? D.editorTop(th) : wheel}
+    <div class="grp">
+      <div class="cell"><span>Label</span><span class="v">Work</span></div>
+      <div class="cell" style="flex-direction:column;align-items:stretch;padding:10px 16px 10px">
+        <div style="display:flex;justify-content:space-between"><span>Repeat</span><span class="v">Weekdays</span></div>
+        <div class="days" style="margin-top:8px">${DL.map((d,i) => `<span class="day ${i<5?'on':''}">${d}</span>`).join('')}</div>
+      </div>
+      <div class="cell"><span>Sound</span><span class="v">Beep ›</span></div>
+      <div class="cell"><span>Tasks <span class="small">· Phase Two</span></span><span class="v">None ›</span></div>
+    </div>
+    <div class="gh">Snooze</div>
+    <div class="grp">
+      <div class="cell"><span>Duration</span><span class="v">5 min ⌃</span></div>
+      <div class="cell"><span>Max snoozes</span><span class="v">3 ⌃</span></div>
+    </div>
+    <div class="gh">Volume</div>
+    <div class="grp">
+      <div class="cell"><span>Loud mode</span>${sw(true)}</div>
+      <div class="cell"><span>80%</span><span class="slider"><i></i><b></b></span></div>
+      <div class="cell"><span>Fade in over 15 s</span>${sw(true)}</div>
+    </div>${home}`;
+}
+
+function nightstand(D) {
+  const n = D.night;
+  return `<div class="stand">${seg('06:30'.replace('06:30','23:14'), { h: 230, t: n.t, skew: n.skew, ink: n.ink, ghost: null, w: n.w })}
+    <span class="ann" style="left:70px;top:58px;color:${n.ink}">AL</span>
+    <span class="ann" style="right:70px;bottom:52px;color:${n.ink};opacity:.0">.</span></div>`;
+}
+
+const css = (th) => Object.entries(th).filter(([k]) => k.startsWith('--')).map(([k,v]) => `${k}:${v}`).join(';');
+const phone = (th, inner, land) => `<div class="phone ${land ? 'land' : ''}" style="${css(th)}">${inner}</div>`;
+const fig = (cap, html) => `<figure>${html}<figcaption>${cap}</figcaption></figure>`;
+
+/* ---------- Direction A: Travel Clock ---------- */
+const A = {
+  id: 'assigned', name: 'Travel Clock', line: 'Braun-era LCD travel alarm: a flat plastic body with one reflective LCD window set into it, and one signal color that means “armed”.',
+  segOpt: (th, h) => ({ h, t: .13, skew: 5, ink: th.lcdInk, ghost: th.lcdGhost }),
+  themes: {
+    light: { '--bg':'#E6E6E2','--panel':'#F3F3F0','--ink':'#151515','--ink2':'#64645F','--rule':'#DADAD5','--tint':'#151515','--chip':'#D9D9D4','--swOn':'#F2C100','--swOff':'#D2D2CD','--dayOff':'#E3E3DF','--dayOn':'#151515','--dayOnInk':'#F3F3F0',
+      lcd:'#BCC3AC', lcdInk:'#1E2219', lcdGhost:'rgba(30,34,25,.075)', lcdEdge:'#A9B099', key:'#D3D3CE', keyInk:'#151515', signal:'#F2C100', signalInk:'#151515' },
+    dark: { '--bg':'#111111','--panel':'#1C1C1B','--ink':'#ECECE7','--ink2':'#8F8F89','--rule':'#2B2B2A','--tint':'#ECECE7','--chip':'#262625','--swOn':'#F2C100','--swOff':'#333331','--dayOff':'#262625','--dayOn':'#ECECE7','--dayOnInk':'#111','--knob':'#F3F3F0',
+      lcd:'#1F231C', lcdInk:'#CBD2BC', lcdGhost:'rgba(203,210,188,.055)', lcdEdge:'#2E3329', key:'#262625', keyInk:'#ECECE7', signal:'#F2C100', signalInk:'#111' },
+  },
+  night: { ink: '#9A6E00', t: .13, skew: 5, w: .54 },
+  win: (th, inner, pad = '10px 14px', r = 12) => `<span style="display:inline-flex;align-items:center;gap:10px;background:${th.lcd};box-shadow:inset 0 0 0 1px ${th.lcdEdge};border-radius:${r}px;padding:${pad}">${inner}</span>`,
+  list(mode) {
+    const th = this.themes[mode];
+    const rows = ALARMS.map(a => {
+      const digits = seg(a.t, { ...this.segOpt(th, 40) });
+      return `<div style="display:flex;align-items:center;gap:14px;padding:10px 20px;${a.on?'':'opacity:.4'}">
+        ${this.win(th, digits + (a.loud ? `<span style="font:700 10px/1 -apple-system, system-ui, sans-serif;letter-spacing:.8px;color:${th.lcdInk};align-self:flex-start">LOUD</span>` : ''))}
+        <div style="flex:1;min-width:0"><div class="label">${a.label}</div><div class="sub">${a.sum}</div></div>${sw(a.on)}</div>`;
+    }).join('');
+    return `${sb()}<div class="nav"><span></span><span class="plus">+</span></div><div class="lt">Alarms</div>
+      <div class="next">Next <b>Mon 06:30</b> · in 7 h 16 min</div>${rows}${home}`;
+  },
+  ringing(mode, phase2) {
+    const th = this.themes[mode];
+    return `${sb()}<div class="ring">
+      <div style="margin-top:34px;text-align:center"><div class="label" style="font-size:22px">Work</div><div class="sub">Alarm 06:30 · Weekdays</div></div>
+      <div style="flex:1;display:grid;place-items:center">${this.win(th, seg("06:30", this.segOpt(th, 96)), "22px 20px", 22)}</div>
+      ${phase2 ? `<div class="sub" style="text-align:center;margin-bottom:14px">3 tasks before Stop: Math · Walk 30 steps · Scan QR</div>` : ''}
+      <div class="btn" style="background:${th.key};color:${th.keyInk}">Snooze 5 min<small>2 of 3 left</small></div>
+      <div class="btn tall" style="background:${th.signal};color:${th.signalInk}">${phase2 ? 'Start tasks' : 'Stop'}${phase2 ? '<small>Stop unlocks after 3 tasks</small>' : ''}</div>
+    </div>${home}`;
+  },
+};
+
+/* ---------- Direction B: Unlit Glass ---------- */
+const B = {
+  id: 'model-pick', name: 'Unlit Glass', line: 'The whole screen is one unlit reflective LCD. Every state is a printed segment that is either inked or ghosted; nothing appears that the glass could not show.',
+  segOpt: (th, h) => ({ h, t: .14, skew: 0, ink: th['--ink'], ghost: th.ghost, w: .52 }),
+  themes: {
+    light: { '--bg':'#C7CCB6','--panel':'transparent','--ink':'#1A1D15','--ink2':'#474C3D','--rule':'rgba(26,29,21,.16)','--tint':'#1A1D15','--chip':'rgba(26,29,21,.08)','--swOn':'#1A1D15','--swOff':'rgba(26,29,21,.16)','--knob':'#C7CCB6','--dayOff':'transparent','--dayOn':'#1A1D15','--dayOnInk':'#C7CCB6','--gr':'0px','--btnR':'6px','--dayR':'4px',
+      ghost:'rgba(26,29,21,.075)' },
+    dark: { '--bg':'#0D0F0C','--panel':'transparent','--ink':'#D0D6C3','--ink2':'#8A917D','--rule':'rgba(208,214,195,.13)','--tint':'#D0D6C3','--chip':'rgba(208,214,195,.07)','--swOn':'#D0D6C3','--swOff':'rgba(208,214,195,.16)','--knob':'#0D0F0C','--dayOff':'transparent','--dayOn':'#D0D6C3','--dayOnInk':'#0D0F0C','--gr':'0px','--btnR':'6px','--dayR':'4px',
+      ghost:'rgba(208,214,195,.06)' },
+  },
+  night: { ink: '#5F6B55', t: .14, skew: 0, w: .52 },
+  ann(th, letters, on) { return letters.map((d,i) => `<span style="width:15px;text-align:center;font:700 12px/1 -apple-system, system-ui, sans-serif;color:${on[i] ? th['--ink'] : th.ghost.replace(/[\d.]+\)$/, '.16)')}">${d}</span>`).join(''); },
+  list(mode) {
+    const th = this.themes[mode];
+    const rows = ALARMS.map(a => {
+      const on = a.days || [0,0,0,0,0,0,0];
+      return `<div style="padding:12px 20px 14px;box-shadow:inset 0 1px 0 ${th['--rule']}">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span class="${a.on?'':'muted'}">${seg(a.t, this.segOpt(th, 50))}</span>${sw(a.on)}</div>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:10px" class="${a.on?'':'muted'}">
+          <span class="label" style="flex:1">${a.label}</span>
+          ${a.loud ? `<span style="font:700 11px/1 -apple-system, system-ui, sans-serif;letter-spacing:.8px;border:1.5px solid currentColor;padding:2px 4px;border-radius:3px">LOUD</span>` : ''}
+          ${a.days ? `<span style="display:flex">${this.ann(th, DL, on)}</span>` : `<span style="font:700 12px/1 -apple-system, system-ui, sans-serif;letter-spacing:.8px">ONCE</span>`}
+        </div></div>`;
+    }).join('');
+    return `${sb()}<div class="nav"><span></span><span class="plus" style="border-radius:6px">+</span></div><div class="lt">Alarms</div>
+      <div class="next">Next <b>Mon 06:30</b> · in 7 h 16 min</div>${rows}${home}`;
+  },
+  ringing(mode, phase2) {
+    const th = this.themes[mode];
+    return `${sb()}<div class="ring">
+      <div style="display:flex;justify-content:space-between;margin-top:26px;font:700 13px/1 -apple-system, system-ui, sans-serif;letter-spacing:1px"><span>AL 06:30</span><span>SNZ 2/3</span></div>
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:18px">
+        ${seg("06:30", this.segOpt(th, 118))}<div class="label" style="font-size:24px">Work</div></div>
+      ${phase2 ? `<div style="display:flex;gap:8px;margin-bottom:16px">${['Math','Walk','QR'].map(t => `<span style="flex:1;text-align:center;padding:9px 0;box-shadow:inset 0 0 0 1.5px ${th['--rule']};border-radius:4px;font:600 15px -apple-system, system-ui, sans-serif">${t}</span>`).join('')}</div>` : ''}
+      <div class="btn" style="box-shadow:inset 0 0 0 2px ${th['--ink']}">Snooze 5 min</div>
+      <div class="btn tall" style="background:${th['--ink']};color:${th['--bg']}">${phase2 ? 'Start tasks<small>Stop unlocks after 3 tasks</small>' : 'Stop'}</div>
+    </div>${home}`;
+  },
+};
+
+/* ---------- Direction C: Departure Board ---------- */
+const C = {
+  id: 'challenger-board', name: 'Departure Board', line: 'Alarms as a timetable: fixed columns, rows ranked by time, each digit in its own cell, the next alarm called in amber.',
+  segOpt: (th, h) => ({ h, t: .12, skew: 0, ink: th['--ink'], ghost: null, w: .5 }),
+  themes: {
+    dark: { '--bg':'#0A0A0A','--panel':'#151515','--ink':'#F2F2EE','--ink2':'#8C8C87','--rule':'#1F1F1F','--tint':'#FFB000','--chip':'#1B1B1B','--swOn':'#FFB000','--swOff':'#2A2A2A','--dayOff':'#1B1B1B','--dayOn':'#F2F2EE','--dayOnInk':'#0A0A0A','--gr':'4px','--btnR':'6px','--dayR':'3px','--ghTrack':'1.2px',
+      cell:'#1B1B1B', amber:'#FFB000', amberInk:'#0A0A0A' },
+    light: { '--bg':'#ECECE8','--panel':'#F7F7F4','--ink':'#111111','--ink2':'#5D5D58','--rule':'#D9D9D3','--tint':'#9A5F00','--chip':'#DCDCD6','--swOn':'#E09A00','--swOff':'#CFCFC9','--dayOff':'#DCDCD6','--dayOn':'#111','--dayOnInk':'#F7F7F4','--gr':'4px','--btnR':'6px','--dayR':'3px','--ghTrack':'1.2px',
+      cell:'#DADAD4', amber:'#E09A00', amberInk:'#111' },
+  },
+  night: { ink: '#A86400', t: .12, skew: 0, w: .5 },
+  cells(th, t, h) {
+    return `<span style="display:inline-flex;gap:3px;align-items:center">${[...t].map(ch => ch === ':' ? `<span style="width:6px;display:grid;gap:${h*.3}px"><i style="width:5px;height:5px;background:${th['--ink']}"></i><i style="width:5px;height:5px;background:${th['--ink']}"></i></span>`
+      : `<span style="background:${th.cell};border-radius:3px;padding:${h*.16}px ${h*.14}px">${seg(ch, this.segOpt(th, h))}</span>`).join('')}</span>`;
+  },
+  list(mode) {
+    const th = this.themes[mode];
+    const head = `<div style="display:flex;padding:0 20px 8px;font:600 11px/1 -apple-system, system-ui, sans-serif;letter-spacing:1.2px;color:${th['--ink2']}"><span style="width:16px"></span><span style="width:134px">TIME</span><span style="flex:1">ALARM</span><span>ON</span></div>`;
+    const rows = ALARMS.map(a => `<div style="display:flex;align-items:center;padding:12px 20px;box-shadow:inset 0 1px 0 ${th['--rule']}">
+        <span style="width:16px"><i style="display:block;width:8px;height:8px;border-radius:4px;background:${a.next ? th.amber : 'transparent'}"></i></span>
+        <span style="width:134px" class="${a.on?'':'muted'}">${this.cells(th, a.t, 26)}</span>
+        <span style="flex:1;min-width:0" class="${a.on?'':'muted'}"><div class="label">${a.label}</div>
+          <div style="font:600 12px/1.5 -apple-system, system-ui, sans-serif;letter-spacing:1px;color:${a.next ? th.amber : th['--ink2']}">${a.next ? 'NEXT · 7 H 16 MIN' : a.sum.toUpperCase()}${a.loud ? ' · LOUD' : ''}</div></span>
+        ${sw(a.on)}</div>`).join('');
+    return `${sb()}<div class="nav"><span></span><span class="plus" style="border-radius:6px">+</span></div><div class="lt">Alarms</div>
+      <div class="next">Next <b>Mon 06:30</b> · in 7 h 16 min</div>${head}${rows}${home}`;
+  },
+  ringing(mode, phase2) {
+    const th = this.themes[mode];
+    return `${sb()}<div class="ring">
+      <div style="margin-top:30px;display:flex;align-items:center;gap:10px;font:700 14px/1 -apple-system, system-ui, sans-serif;letter-spacing:1.4px;color:${th.amber}"><i style="width:10px;height:10px;border-radius:5px;background:${th.amber}"></i>NOW RINGING</div>
+      <div class="label" style="font-size:28px;margin-top:10px">Work</div><div class="sub">06:30 · Weekdays · snooze 2 of 3 left</div>
+      <div style="flex:1;display:grid;place-items:center">${this.cells(th, '06:30', 96)}</div>
+      ${phase2 ? `<div style="margin-bottom:14px">${['Math · 3 problems','Walk · 30 steps','Scan QR · Kitchen'].map((t,i) => `<div style="display:flex;justify-content:space-between;padding:10px 0;box-shadow:inset 0 -1px 0 ${th['--rule']};font-size:16px"><span>${t}</span><span style="font:600 12px -apple-system, system-ui, sans-serif;letter-spacing:1px;color:${th['--ink2']}">${i===0?'FIRST':'WAITING'}</span></div>`).join('')}</div>` : ''}
+      <div class="btn" style="background:${th.cell}">Snooze 5 min</div>
+      <div class="btn tall" style="background:${th.amber};color:${th.amberInk}">${phase2 ? 'Start tasks<small>Stop unlocks after 3 tasks</small>' : 'Stop'}</div>
+    </div>${home}`;
+  },
+};
+
+/* ---------- Canon: the category standard ---------- */
+const K = {
+  id: 'canon', name: 'Clock app, played straight', line: 'What the category ships: system grouped lists, thin rounded digits, orange tint. No segment display.',
+  themes: {
+    light: { '--bg':'#F2F2F7','--panel':'#FFFFFF','--ink':'#000','--ink2':'#8A8A8E','--rule':'#E3E3E8','--tint':'#FF9500','--chip':'#E5E5EA','--swOn':'#34C759','--swOff':'#E5E5EA','--dayOff':'#EFEFF4','--dayOn':'#FF9500','--dayOnInk':'#fff' },
+    dark: { '--bg':'#000','--panel':'#1C1C1E','--ink':'#fff','--ink2':'#8D8D93','--rule':'#2C2C2E','--tint':'#FF9F0A','--chip':'#2C2C2E','--swOn':'#34C759','--swOff':'#39393D','--dayOff':'#2C2C2E','--dayOn':'#FF9F0A','--dayOnInk':'#000' },
+  },
+  list(mode) {
+    const rows = ALARMS.map(a => `<div style="display:flex;align-items:center;padding:8px 20px;box-shadow:inset 0 -1px 0 var(--rule)">
+      <div style="flex:1;${a.on?'':'opacity:.45'}"><div style="font:200 52px/1.05 "SF Pro Rounded", system-ui, system-ui, sans-serif">${a.t}</div><div class="sub" style="color:var(--ink)">${a.label}, ${a.sum}</div></div>${sw(a.on)}</div>`).join('');
+    return `${sb()}<div class="nav"><span style="color:var(--tint);font-size:17px">Edit</span><span style="color:var(--tint);font-size:28px">+</span></div><div class="lt">Alarms</div><div style="height:14px"></div>${rows}${home}`;
+  },
+  ringing(mode, phase2) {
+    return `${sb()}<div class="ring"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center">
+      <div style="font:200 96px/1 "SF Pro Rounded", system-ui, system-ui, sans-serif">06:30</div><div style="font-size:24px;margin-top:10px">Work</div></div>
+      ${phase2 ? `<div class="sub" style="text-align:center;margin-bottom:14px">3 tasks before Stop</div>` : ''}
+      <div class="btn" style="background:var(--chip)">Snooze 5 min</div>
+      <div class="btn tall" style="background:var(--tint);color:#fff">${phase2 ? 'Start tasks' : 'Stop'}</div></div>${home}`;
+  },
+  night: null,
+};
+
+function board(D) {
+  const L = D.themes.light, Dk = D.themes.dark;
+  const stand = D.night ? nightstand(D)
+    : `<div class="stand"><span style="font:200 210px/1 "SF Pro Rounded", system-ui, system-ui, sans-serif;color:#8E2A20">23:14</span></div>`;
+  return `<section class="board" id="${D.id}">
+    <h1>${D.name}</h1><p>${D.line}</p>
+    <div class="row">
+      ${fig('<b>List</b> · light', phone(L, D.list('light')))}
+      ${fig('<b>List</b> · dark', phone(Dk, D.list('dark')))}
+      ${fig('<b>Editor</b> · light', phone(L, editor(D, 'light')))}
+      ${fig('<b>Ringing</b> · dark', phone(Dk, D.ringing('dark', false)))}
+      ${fig('<b>Ringing</b> with Phase Two tasks · light', phone(L, D.ringing('light', true)))}
+    </div>
+    <div class="row">
+      ${fig('<b>Nightstand</b> · landscape, charging, alarm armed. Pure black OLED, minimum brightness, no ghost segments, drifts a few points each minute against burn-in.', phone({ '--bg':'#000','--ink':'#333' }, stand, true))}
+    </div></section>`;
+}
+
+const ALL = [A, B, C, K];
+const only = new URLSearchParams(location.search).get('d');
+document.getElementById('out').innerHTML = ALL.filter(D => !only || D.id === only).map(board).join('');
+</script>
+</body>
+</html>

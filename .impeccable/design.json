@@ -1,0 +1,304 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-05T00:00:00Z",
+  "title": "Design System: OpenAlarm",
+  "extensions": {
+    "colorMeta": {
+      "ink": {
+        "role": "primary",
+        "displayName": "Segment Ink",
+        "canonical": "#1A1D15",
+        "tonalRamp": [
+          "#050604",
+          "#0A0C08",
+          "#10110D",
+          "#151711",
+          "#484A44",
+          "#767773",
+          "#A3A5A1",
+          "#D1D2D0"
+        ]
+      },
+      "ink-dark": {
+        "role": "primary",
+        "displayName": "Segment Ink (dark)",
+        "canonical": "#D0D6C3",
+        "tonalRamp": [
+          "#2A2B27",
+          "#53564E",
+          "#7D8075",
+          "#A6AB9C",
+          "#D9DECF",
+          "#E3E6DB",
+          "#ECEFE7",
+          "#F6F7F3"
+        ]
+      },
+      "lcd": {
+        "role": "neutral",
+        "displayName": "Unlit Glass",
+        "canonical": "#C7CCB6",
+        "tonalRamp": [
+          "#282924",
+          "#505249",
+          "#777A6D",
+          "#9FA392",
+          "#D2D6C5",
+          "#DDE0D3",
+          "#E9EBE2",
+          "#F4F5F0"
+        ]
+      },
+      "lcd-dark": {
+        "role": "neutral",
+        "displayName": "Unlit Glass (dark)",
+        "canonical": "#0D0F0C",
+        "tonalRamp": [
+          "#030302",
+          "#050605",
+          "#080907",
+          "#0A0C0A",
+          "#3D3F3D",
+          "#6E6F6D",
+          "#9E9F9E",
+          "#CFCFCE"
+        ]
+      },
+      "ink2": {
+        "role": "neutral",
+        "displayName": "Faded Ink",
+        "canonical": "#474C3D",
+        "tonalRamp": [
+          "#0E0F0C",
+          "#1C1E18",
+          "#2B2E25",
+          "#393D31",
+          "#6C7064",
+          "#91948B",
+          "#B5B7B1",
+          "#DADBD8"
+        ]
+      },
+      "ink2-dark": {
+        "role": "neutral",
+        "displayName": "Faded Ink (dark)",
+        "canonical": "#8A917D",
+        "tonalRamp": [
+          "#1C1D19",
+          "#373A32",
+          "#53574B",
+          "#6E7464",
+          "#A1A797",
+          "#B9BDB1",
+          "#D0D3CB",
+          "#E8E9E5"
+        ]
+      },
+      "night-red": {
+        "role": "tertiary",
+        "displayName": "Night Red",
+        "canonical": "rgb(153, 0, 0)",
+        "tonalRamp": [
+          "#1F0000",
+          "#3D0000",
+          "#5C0000",
+          "#7A0000",
+          "#AD3333",
+          "#C26666",
+          "#D69999",
+          "#EBCCCC"
+        ]
+      },
+      "night-black": {
+        "role": "neutral",
+        "displayName": "Night Black",
+        "canonical": "#000000",
+        "tonalRamp": [
+          "#000000"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "segment": {
+        "displayName": "Segment",
+        "purpose": "Every displayed clock time, drawn as 7-segment shapes with ghost segments."
+      },
+      "large-title": {
+        "displayName": "Large Title",
+        "purpose": "Native nav title, in ink."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Alarm label on the ringing screen."
+      },
+      "button": {
+        "displayName": "Button",
+        "purpose": "Snooze and Stop; empty-state heading."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Alarm label in list rows."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Editor rows and weekday chips."
+      },
+      "secondary": {
+        "displayName": "Secondary",
+        "purpose": "Next line, footers, snoozes left, in Faded Ink."
+      },
+      "legend": {
+        "displayName": "Legend",
+        "purpose": "Uppercase annunciators: LOUD, ONCE, AL, AM/PM, weekday strip."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "ringing-flash",
+        "value": "opacity 1 / 0.15, alternating every 0.5 s (1 Hz), no easing",
+        "purpose": "Ringing digits flash like an alarming LCD clock. Steady under Reduce Motion."
+      },
+      {
+        "name": "nightstand-drift",
+        "value": "8 fixed offsets, one step per minute, up to 12pt",
+        "purpose": "Burn-in protection on the nightstand face."
+      },
+      {
+        "name": "appearance-crossfade",
+        "value": "0.35 s cross-dissolve of every window on appearance change; none on launch",
+        "purpose": "The whole glass changes appearance at once instead of each view snapping on its own."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "compact-height",
+        "value": "verticalSizeClass == .compact",
+        "purpose": "Ringing goes side by side; nightstand face eligible."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Stop Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Primary ringing action: solid ink, full width, the largest target.",
+      "html": "<button class=\"ds-btn-stop\">Stop</button>",
+      "css": ".ds-btn-stop { width: 100%; min-height: 84px; background: #1A1D15; color: #C7CCB6; border: none; border-radius: 6px; font: 600 22px -apple-system, system-ui, sans-serif; } .ds-btn-stop:focus-visible { outline: 2px solid #1A1D15; outline-offset: 3px; } .ds-btn-stop:active { opacity: 0.8; }"
+    },
+    {
+      "name": "Snooze Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Secondary ringing action: ink outline on the glass, with snoozes left below.",
+      "html": "<button class=\"ds-btn-snooze\">Snooze 5 min<span>2 of 3 left</span></button>",
+      "css": ".ds-btn-snooze { width: 100%; min-height: 64px; background: #C7CCB6; color: #1A1D15; border: 2px solid #1A1D15; border-radius: 6px; font: 600 22px -apple-system, system-ui, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; } .ds-btn-snooze span { font: 400 15px -apple-system, system-ui, sans-serif; color: #474C3D; } .ds-btn-snooze:focus-visible { outline: 2px solid #1A1D15; outline-offset: 3px; } .ds-btn-snooze:active { opacity: 0.8; }"
+    },
+    {
+      "name": "Weekday Chips",
+      "kind": "chip",
+      "refersTo": "weekday-chip-on",
+      "description": "Editor repeat selector: solid ink when on, 7% ink when off.",
+      "html": "<div class=\"ds-days\"><button class=\"ds-day on\">M</button><button class=\"ds-day on\">T</button><button class=\"ds-day\">W</button><button class=\"ds-day on\">T</button><button class=\"ds-day on\">F</button><button class=\"ds-day\">S</button><button class=\"ds-day\">S</button></div>",
+      "css": ".ds-days { display: flex; gap: 4px; background: #C7CCB6; padding: 8px; } .ds-day { flex: 1; min-height: 44px; border: none; border-radius: 4px; background: rgba(26,29,21,0.07); color: #1A1D15; font: 600 17px -apple-system, system-ui, sans-serif; } .ds-day.on { background: #1A1D15; color: #C7CCB6; } .ds-day:focus-visible { outline: 2px solid #1A1D15; outline-offset: 2px; }"
+    },
+    {
+      "name": "Legend",
+      "kind": "chip",
+      "refersTo": "legend-boxed",
+      "description": "LCD annunciator text; boxed variant for LOUD.",
+      "html": "<span class=\"ds-legend\">AL 06:30</span> <span class=\"ds-legend boxed\">LOUD</span> <span class=\"ds-legend\">ONCE</span>",
+      "css": ".ds-legend { color: #1A1D15; font: 700 12px -apple-system, system-ui, sans-serif; letter-spacing: 0.8px; text-transform: uppercase; } .ds-legend.boxed { border: 1.5px solid #1A1D15; border-radius: 3px; padding: 1px 4px; }"
+    },
+    {
+      "name": "Alarm Row",
+      "kind": "card",
+      "description": "Ghosted segment time left, native switch right, label and day strip below; hairline rule between rows.",
+      "html": "<div class=\"ds-row\"><div class=\"ds-row-top\"><span class=\"ds-seg\">06:30</span><span class=\"ds-switch\"></span></div><div class=\"ds-row-bottom\"><span class=\"ds-label\">Work</span><span class=\"ds-strip\"><b>M</b><b>T</b><b>W</b><b>T</b><b>F</b><i>S</i><i>S</i></span></div></div>",
+      "css": ".ds-row { background: #C7CCB6; color: #1A1D15; padding: 6px 16px; border-bottom: 1px solid rgba(26,29,21,0.16); } .ds-row-top { display: flex; justify-content: space-between; align-items: center; } .ds-seg { font: 700 50px ui-monospace, monospace; line-height: 1; } .ds-switch { width: 51px; height: 31px; border-radius: 16px; background: #1A1D15; } .ds-row-bottom { display: flex; justify-content: space-between; margin-top: 10px; } .ds-label { font: 600 17px -apple-system, system-ui, sans-serif; } .ds-strip { font: 700 12px -apple-system, system-ui, sans-serif; } .ds-strip b, .ds-strip i { display: inline-block; width: 15px; text-align: center; font-style: normal; } .ds-strip i { opacity: 0.2; }"
+    },
+    {
+      "name": "Nightstand Face",
+      "kind": "custom",
+      "refersTo": "nightstand-face",
+      "description": "Pure black, red segments without ghosts, AL legend above.",
+      "html": "<div class=\"ds-night\"><span class=\"ds-night-al\">AL 06:30</span><span class=\"ds-night-time\">23:42</span></div>",
+      "css": ".ds-night { background: #000; color: #990000; padding: 24px 60px; display: flex; flex-direction: column; gap: 12px; } .ds-night-al { font: 700 12px -apple-system, system-ui, sans-serif; letter-spacing: 0.8px; } .ds-night-time { font: 700 96px ui-monospace, monospace; line-height: 1; }"
+    },
+    {
+      "name": "Outline Toolbar Button",
+      "kind": "button",
+      "refersTo": "button-toolbar-secondary",
+      "description": "Secondary toolbar action (gear): ink outline on the glass, paired with one solid ink primary.",
+      "html": "<button class=\"ds-btn-outline\" aria-label=\"Settings\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z\"/></svg></button>",
+      "css": ".ds-btn-outline { min-width: 44px; min-height: 36px; padding: 0 12px; background: transparent; color: #1A1D15; border: 1.5px solid #1A1D15; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; } .ds-btn-outline:hover, .ds-btn-outline:active { background: rgba(26,29,21,0.12); } .ds-btn-outline:focus-visible { outline: 2px solid #1A1D15; outline-offset: 3px; }"
+    },
+    {
+      "name": "Appearance Tile",
+      "kind": "custom",
+      "refersTo": "appearance-tile",
+      "description": "Settings appearance choice: real glass in its own palette with a ghosted 12:00; System split on the diagonal; ink ring when selected.",
+      "html": "<div class=\"ds-tiles\"><button class=\"ds-tile is-selected\"><span class=\"ds-tile-glass ds-sys\">12:00</span><b>SYSTEM</b></button><button class=\"ds-tile\"><span class=\"ds-tile-glass\">12:00</span><b>LIGHT</b></button><button class=\"ds-tile\"><span class=\"ds-tile-glass ds-dark\">12:00</span><b>DARK</b></button></div>",
+      "css": ".ds-tiles { display: flex; gap: 12px; background: #C7CCB6; padding: 16px; } .ds-tile { flex: 1; background: none; border: 0; padding: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; } .ds-tile-glass { position: relative; display: flex; align-items: center; justify-content: center; width: calc(100% - 8px); aspect-ratio: 1.15; margin: 4px; border-radius: 6px; background: #C7CCB6; color: #1A1D15; box-shadow: inset 0 0 0 1px rgba(26,29,21,0.16); font: 700 28px ui-monospace, monospace; } .ds-dark { background: #0D0F0C; color: #D0D6C3; } .ds-sys { background: linear-gradient(to bottom right, #C7CCB6 50%, #0D0F0C 50%); } .ds-tile.is-selected .ds-tile-glass { outline: 2px solid #1A1D15; outline-offset: 2px; } .ds-tile b { font: 700 12px -apple-system, system-ui, sans-serif; letter-spacing: 0.8px; color: #474C3D; } .ds-tile.is-selected b { color: #1A1D15; } .ds-tile:focus-visible { outline: 2px solid #1A1D15; outline-offset: 3px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Unlit Glass",
+    "overview": "The whole screen is one unlit, reflective LCD. Every state is a printed segment, either inked or ghosted. Nothing appears that the glass could not show. In light mode the glass is grey-green with near-black ink; in dark mode it is a negative LCD with pale ink on near-black.\n\nIdentity lives in three places only: the ground color, the 7-segment digits, and the small bold legends printed beside them. Navigation, sheets, menu pickers and swipe actions stay native iOS, tinted ink. Controls that would show stock iOS chrome (switches, the time wheel, the volume slider, glass toolbar buttons) are redrawn as printed LCD parts (`Controls.swift`). The app refuses the Clock-app default of thin rounded digits on grouped cards.\n\nThe nightstand face is a separate, darker state of the same world: pure black, dim red segments, no ghosts.",
+    "keyCharacteristics": [
+      "One flat ground per screen; no cards, no shadows.",
+      "Two-tone: ground and ink, with one secondary ink for supporting text.",
+      "Time is always drawn as 7-segment shapes, with faint ghost segments behind.",
+      "Small bold uppercase legends act as LCD annunciators.",
+      "Native navigation and menu pickers, tinted ink. Switches, time setter, level bar and toolbar buttons drawn as LCD parts."
+    ],
+    "rules": [
+      {
+        "name": "The Two-Tone Rule",
+        "body": "A screen uses ground and ink, plus Faded Ink for supporting text. States are made with ink opacity, never a new hue. The one exception is the system red of destructive actions (Delete).",
+        "section": "colors"
+      },
+      {
+        "name": "The Red-Only-At-Night Rule",
+        "body": "Night Red appears only on the nightstand face, on pure black. It never appears in the daytime screens.",
+        "section": "colors"
+      },
+      {
+        "name": "The Segment-For-Time Rule",
+        "body": "A displayed clock time is drawn with `SegmentClock`, never with a text font. In prose lines (the \"Next\" line, legends) the time is plain text formatted by `Segments.label`, so \"AL 06:30\" matches the digits.",
+        "section": "typography"
+      },
+      {
+        "name": "The Ghost Rule",
+        "body": "Segment digits show unlit ghost segments behind them (7.5% ink), like an \"8\" printed on the glass. Only the nightstand face turns ghosts off.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Glass Rule",
+        "body": "Nothing floats above the glass. No cards, no shadows, no grouped-list backgrounds.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** use `Color.lcd` as the background of every screen and `Color.ink` as foreground and tint.",
+      "**Do** use `Color.ink2` for secondary text instead of `.secondary`.",
+      "**Do** draw every displayed time with `SegmentClock`, with ghosts on (except the nightstand).",
+      "**Do** format times in legends and text with `Segments.label` so they match the digits.",
+      "**Do** express state with ink opacity (7.5% ghost, 20% off, 35% disabled) rather than new colors.",
+      "**Do** use native iOS menu pickers and navigation, tinted ink, and the LCD switch, level bar and ink buttons from `Controls.swift` for everything else.",
+      "**Do** keep ringing actions full width: Stop solid ink and larger, Snooze outlined.",
+      "**Do** give every `Form` sheet `sheetForm()` and hidden section separators, so sheets share the list's ground and gutter.",
+      "**Do** honor Reduce Motion: anything that flashes or moves becomes steady."
+    ],
+    "donts": [
+      "**Don't** use thin rounded digit fonts or any text font for clock times.",
+      "**Don't** put content on cards, grouped backgrounds, or shadows.",
+      "**Don't** add accent colors; ink is the tint.",
+      "**Don't** use Night Red, or pure black ground, outside the nightstand face.",
+      "**Don't** show ghost segments on the nightstand face.",
+      "**Don't** let stock iOS switches, sliders or glass toolbar buttons through.",
+      "**Don't** put two solid ink buttons in one bar; one solid primary, the rest outlined or plain ink text."
+    ]
+  }
+}

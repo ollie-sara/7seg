@@ -53,6 +53,15 @@ final class AlarmStore {
         return alarm.maxSnoozes.map { session.snoozes < $0 } ?? true
     }
 
+    /// The next time anything rings: the earliest enabled alarm or the snoozed session.
+    func nextRing(after date: Date = .now) -> (alarm: AlarmItem, date: Date)? {
+        var candidates = alarms.filter(\.enabled).map { ($0, $0.nextFire(after: date)) }
+        if let session, let until = session.snoozedUntil, let alarm = alarm(session.alarmID) {
+            candidates.append((alarm, until))
+        }
+        return candidates.min { $0.1 < $1.1 }
+    }
+
     func alarm(_ id: UUID) -> AlarmItem? {
         alarms.first { $0.id == id }
     }
@@ -299,10 +308,14 @@ final class AlarmStore {
 }
 
 /// Runs when the system dismisses the alert (Stop slider, side or volume button, swiping the app closed) and opens the app.
+///
+/// Starts in the background so the nag is scheduled even on a locked phone, then asks to open the app.
+/// With `openAppWhenRun`, the system waited for the passcode before running `perform`; a button press
+/// that ended on the passcode pad never scheduled the nag.
 struct StopIntent: LiveActivityIntent {
     static let title: LocalizedStringResource = "Open ringing alarm"
     static let isDiscoverable = false
-    static let openAppWhenRun = true
+    static let supportedModes: IntentModes = [.background, .foreground(.dynamic)]
 
     @Parameter(title: "Alarm ID") var alarmID: String
 
@@ -314,6 +327,8 @@ struct StopIntent: LiveActivityIntent {
         if let id = UUID(uuidString: alarmID) {
             await AlarmStore.shared.externalStop(id)
         }
+        // Throws if the user doesn't unlock; the nag is already scheduled then.
+        try? await continueInForeground(alwaysConfirm: false)
         return .result()
     }
 }
