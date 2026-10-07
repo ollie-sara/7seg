@@ -55,7 +55,7 @@ A small, open-source iOS app for alarms at set times on chosen weekdays. You can
 
 Verified on device (2026-10-05): while the AlarmKit alert is on screen, it owns the audio. App audio is interrupted ~2 s in, can only come back at a fixed level, and neither the media volume (hidden `MPVolumeView`) nor the player's own volume changes what you hear. `setPrefersNoInterruptionsFromSystemAlerts` doesn't help. An Apple DTS engineer confirms there's no API for the alert volume ([forum thread](https://developer.apple.com/forums/thread/821315)); it follows Settings → Sounds & Haptics → Ringtone and Alerts.
 
-So the app does the same:
+So the app changes the sound file itself instead:
 - Per alarm: **Max volume** (10–100 %, default 100 %) and **Fade in** (Off, 15 s, 30 s, 1 min, 2 min, 5 min; default 15 s).
 - The app renders the alarm's sound for AlarmKit with both baked in: scaled to the max volume and rising from silence over the fade (quadratic gain, so loudness rises evenly). The render loops the sound to fade + 10 min, as AAC in `Library/Sounds`, and is reused until the sound, volume or fade changes. If rendering fails, AlarmKit uses the system sound.
 - Max volume is a share of the ringer volume, the most the Lock Screen can do. The editor says so.
