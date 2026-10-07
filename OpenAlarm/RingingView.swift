@@ -29,12 +29,9 @@ struct RingingView: View {
     private func face(_ alarm: AlarmItem?) -> some View {
         VStack(spacing: 20) {
             if let alarm {
-                HStack {
-                    Legend("AL \(Segments.label(hour: alarm.hour, minute: alarm.minute))")
-                    Spacer()
-                    if alarm.loud { Legend("Loud", boxed: true) }
-                }
-                .accessibilityHidden(true)
+                Legend("AL \(Segments.label(hour: alarm.hour, minute: alarm.minute))")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .accessibilityHidden(true)
             }
             Spacer(minLength: 0)
             // Flashes like an alarming LCD clock; steady under Reduce Motion.

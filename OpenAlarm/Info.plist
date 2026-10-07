@@ -4,9 +4,5 @@
 <dict>
 	<key>NSAlarmKitUsageDescription</key>
 	<string>OpenAlarm schedules your alarms so they ring even in Silent mode and Focus.</string>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>audio</string>
-	</array>
 </dict>
 </plist>

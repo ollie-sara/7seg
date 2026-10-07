@@ -159,24 +159,17 @@ struct SegmentClock: View {
     }
 }
 
-/// Small printed LCD annunciator text: LOUD, ONCE, AL, AM/PM.
+/// Small printed LCD annunciator text: ONCE, AL, AM/PM.
 struct Legend: View {
     let text: String
-    var boxed = false
 
-    init(_ text: String, boxed: Bool = false) {
+    init(_ text: String) {
         self.text = text
-        self.boxed = boxed
     }
 
     var body: some View {
         Text(text.uppercased())
             .font(.caption.weight(.bold))
             .tracking(0.8)
-            .padding(.horizontal, boxed ? 4 : 0)
-            .padding(.vertical, boxed ? 1 : 0)
-            .overlay {
-                if boxed { RoundedRectangle(cornerRadius: 3).strokeBorder(.foreground, lineWidth: 1.5) }
-            }
     }
 }

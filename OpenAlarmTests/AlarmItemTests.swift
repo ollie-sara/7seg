@@ -61,9 +61,21 @@ struct AlarmItemTests {
         #expect(alarm.enabled)
     }
 
-    @Test func transientIDDiffersAndIsStable() {
+    @Test func nagIDsDifferAndAreStable() {
         let alarm = AlarmItem()
         #expect(alarm.transientID != alarm.id)
         #expect(alarm.transientID == alarm.transientID)
+        #expect(Set([alarm.id, alarm.transientID, alarm.backupID]).count == 3)
+    }
+
+    @Test func decodesAlarmsSavedWithLoudMode() throws {
+        var saved = try JSONSerialization.jsonObject(with: JSONEncoder().encode(AlarmItem())) as! [String: Any]
+        saved["fadeSeconds"] = nil
+        saved["loud"] = true
+        saved["loudVolume"] = 0.4
+        saved["fadeIn"] = true
+        let alarm = try JSONDecoder().decode(AlarmItem.self, from: JSONSerialization.data(withJSONObject: saved))
+        #expect(alarm.volume == 0.4)
+        #expect(alarm.fadeSeconds == nil)
     }
 }

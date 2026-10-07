@@ -24,7 +24,7 @@ A small, open-source iOS app for alarms at set times on chosen weekdays. You can
   - The app can stop a ringing AlarmKit alarm from inside the app; the sound and the lock-screen alert both go away.
   - An AlarmKit alarm that fires while the app is in the foreground shows only a small banner, not the full-screen alert.
   - AlarmKit plays `.caf`, `.wav`, `.m4a` and imported `.mp3` files, with no conversion. Short sounds loop; a 45 s sound is not cut off at 30 s.
-  - Loud mode: with ringer volume near zero and Silent on, the app raised the system volume from 0.0 to 1.0 and rang loudly from the background.
+  - Spike 2 (since dropped): with ringer volume near zero and Silent on, the app raised the system volume from 0.0 to 1.0 and rang loudly from the background. The app no longer uses background audio.
 
 ### Phase One: MVP
 
@@ -38,7 +38,7 @@ A small, open-source iOS app for alarms at set times on chosen weekdays. You can
 - Label (optional, default "Alarm"). It is shown on the lock-screen alert.
 - Repeat weekdays. **No days selected = one-shot:** it fires at the next occurrence of that time and then switches itself off.
 - Sound: pick from a set of bundled, freely licensed sounds, or import your own (Files picker, copied into `Library/Sounds` as-is; `.caf`, `.wav`, `.m4a` and `.mp3` all work). Preview plays on tap. Swipe an imported sound to delete it; alarms that used it fall back to the default sound.
-- Volume ("Loud mode"): see below.
+- Max volume and fade-in: see "Volume and fade-in" below.
 - Snooze duration: default 5 min, choices 1–30 min.
 - Max snoozes: default 3, choices 0–10 or unlimited. Once the limit is reached, the in-app Snooze button is hidden and only Stop remains.
 
@@ -51,19 +51,17 @@ A small, open-source iOS app for alarms at set times on chosen weekdays. You can
   - Snooze: silences the alarm and re-fires it after the snooze duration, with the same in-app-only rules.
   - Stop: ends this occurrence. A one-shot alarm switches off; a repeating alarm stays scheduled for its next day.
 
-**Loud mode (custom volume)**
+**Volume and fade-in**
 
-AlarmKit can't set volume, so custom volume needs a second mechanism. Competitor apps do this with background audio, and they have the same limit: it only works while the app is running.
+Verified on device (2026-10-05): while the AlarmKit alert is on screen, it owns the audio. App audio is interrupted ~2 s in, can only come back at a fixed level, and neither the media volume (hidden `MPVolumeView`) nor the player's own volume changes what you hear. `setPrefersNoInterruptionsFromSystemAlerts` doesn't help. An Apple DTS engineer confirms there's no API for the alert volume ([forum thread](https://developer.apple.com/forums/thread/821315)); it follows Settings → Sounds & Haptics → Ringtone and Alerts.
 
-- AlarmKit stays the backbone. Every enabled alarm is always scheduled in AlarmKit.
-- Loud mode is per alarm, with a volume slider. When at least one Loud-mode alarm is enabled, the app keeps an `AVAudioSession` (`.playback`) alive in the background by playing silence.
-- At alarm time the app plays the sound itself at the configured volume.
-- **Fade-in** (per-alarm toggle, on by default in Loud mode): the volume ramps from low to the configured level over 15 s, in steps. To go above the current media volume, it sets the system volume through a hidden `MPVolumeView` slider. This is unofficial but widely used.
-- A few seconds before alarm time, the app pushes the AlarmKit alarm back by ~1 min. The AlarmKit alarm then acts as a fallback if the app's own playback fails.
-- Dismissing the lock-screen alert (side button etc.) doesn't stop the app's own audio. It keeps ringing, and the app posts a local notification as a quick way back into the app. This needs notification permission, which is asked for when Loud mode is first switched on.
-- **Assumption:** the phone is plugged in overnight and the app stays open in the background. Loud mode is not designed for a phone on battery with Low Power Mode.
-- If the user swipe-kills the app, the background audio stops, and the alarm falls back to AlarmKit at ringer volume (verified). The app shows a clear warning about this in the Loud mode setting.
-- Downsides: battery drain from the silent keepalive, and App Review risk (guideline 2.5.4 allows background audio only for audible content). Alarm apps with this feature are on the App Store, but this is the part most likely to be rejected.
+So the app does the same:
+- Per alarm: **Max volume** (10–100 %, default 100 %) and **Fade in** (Off, 15 s, 30 s, 1 min, 2 min, 5 min; default 15 s).
+- The app renders the alarm's sound for AlarmKit with both baked in: scaled to the max volume and rising from silence over the fade (quadratic gain, so loudness rises evenly). The render loops the sound to fade + 10 min, as AAC in `Library/Sounds`, and is reused until the sound, volume or fade changes. If rendering fails, AlarmKit uses the system sound.
+- Max volume is a share of the ringer volume, the most the Lock Screen can do. The editor says so.
+- Snooze re-fires with the fade. The nag after an external dismissal uses a flat render at max volume, loud at once.
+- Once the app is open, it rings itself at **medium volume** (50 % media volume, or the max volume if lower). The user is awake enough by then.
+- No background audio: no silent keepalive, no `UIBackgroundModes: audio`, no App Review 2.5.4 risk. An earlier "Loud mode" and a later "app rings every alarm itself" design were dropped for this.
 
 **Nightstand mode (planned)**
 - When the app is open, the phone is landscape and charging, and at least one alarm is enabled, the app shows a clock face like an old bedside alarm clock.
@@ -71,7 +69,6 @@ AlarmKit can't set volume, so custom volume needs a second mechanism. Competitor
 - OLED power saving: pure black background, dim red digits, no ghost segments, steady colon. The app keeps the screen awake, drops brightness to minimum, and restores it on exit.
 - The clock shifts a few points each minute to prevent burn-in.
 - Exits when the phone is rotated to portrait or unplugged, or on tap. A ringing alarm takes over the screen.
-- Keeping the app in the foreground also makes Loud mode more reliable.
 
 **Settings**
 - Opened from a gear at the top left of the alarm list, as a sheet.
@@ -108,7 +105,7 @@ AlarmKit can't set volume, so custom volume needs a second mechanism. Competitor
 
 - **"Intervals"** (from the original draft): cut. Weekdays plus one-shot cover the real use cases. Add it back later if a concrete need comes up, e.g. "every 2 days".
 - Apple Music / streaming tracks as alarm sounds (DRM, no file access).
-- Fade-in outside Loud mode (AlarmKit has no volume control), sleep tracking, bedtime reminders, widgets, Apple Watch, iCloud sync, Android.
+- Lock-Screen volume above the ringer volume (AlarmKit has no volume API), sleep tracking, bedtime reminders, widgets, Apple Watch, iCloud sync, Android.
 - Holiday/skip-next-occurrence. Nice to have, and cheap to add after the MVP.
 
 ## Tech Stack
@@ -117,7 +114,7 @@ AlarmKit can't set volume, so custom volume needs a second mechanism. Competitor
 - **Min target:** iOS 26 (because of AlarmKit).
 - **Alarms:** AlarmKit (`AlarmManager`), with App Intents for the "Open" button and the stop handler.
 - **Persistence:** alarm settings (label, sound, snooze, tasks) stored as a Codable array in one JSON file in the app's documents directory. AlarmKit keeps the schedule; our JSON keeps everything else, linked by the alarm's UUID. Switch to SwiftData only if the model grows relations or queries.
-- **Audio:** bundled and imported sound files in `Library/Sounds`, used by the AlarmKit alert. The app plays sounds itself with `AVAudioPlayer` for Loud mode and for task timeouts. `MPVolumeView` sets the system volume in Loud mode.
+- **Audio:** bundled and imported sound files in `Library/Sounds`, used by the AlarmKit alert. AlarmKit plays a per-alarm render with the volume and fade-in baked in. The app plays sounds itself with `AVAudioPlayer` on the ringing screen and for task timeouts; `MPVolumeView` sets the system volume there.
 - **Phase two frameworks:** VisionKit (QR scanning), CoreImage `CIQRCodeGenerator` (QR generation), CoreMotion (shake, steps).
 - **Dependencies:** none.
 - **Tests:** unit tests for the pure logic only: next-fire-date calculation, one-shot auto-disable, math problem generation. The alarm behaviour itself is tested by hand on a device.
@@ -138,17 +135,17 @@ Setup and raw results: `spike/README.md`.
 
 Resolved:
 - *How do we make the alarm take precedence?* → AlarmKit, iOS 26+.
-- *Notification to open the app?* → Sliding the system Stop button opens the app (verified). In Loud mode, a local notification is also posted as a quick-link.
+- *Notification to open the app?* → Sliding the system Stop button opens the app (verified). No extra notification: the nag re-shows the full-screen alert.
 - *One-shot behaviour?* → Fires at the next occurrence of that time, then switches itself off.
 - *Task forfeit?* → The alarm rings again and the current task restarts; completed tasks stay completed.
 
-- *Max volume?* → AlarmKit can't do it. Add opt-in Loud mode using background audio, with AlarmKit as the fallback (see Phase One). Validate with spike 2.
+- *Max volume?* → AlarmKit can't do it. No API for the alert volume. Max volume and fade-in are baked into the sound file AlarmKit plays, as a share of the ringer volume (see Phase One).
 - *Snooze with tasks?* → Only Stop requires the tasks. Add a max-snoozes setting (default 3).
 - *Emergency escape?* → After 3 failed attempts, show a Skip button that must be held for 5 s.
 - *Distribution?* → Personal/TestFlight first, App Store later. Build to App Store quality.
 - *Importable sounds?* → Yes, in Phase One.
 
-- *Volume fade-in?* → Yes, in Loud mode: 15 s ramp, per-alarm toggle.
+- *Volume fade-in?* → Yes: baked into the sound, Off / 15 s / 30 s / 1 min / 2 min / 5 min per alarm.
 
 Still open:
 - Nothing. All spikes are done; Phase One can start. None of them block starting Phase One.

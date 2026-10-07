@@ -1,6 +1,11 @@
 import SwiftUI
 
 struct AlarmEditor: View {
+    /// iOS 27 can give alarms their own volume; before that they follow the ringer.
+    private static var systemVolumeName: String {
+        if #available(iOS 27, *) { "Alarms and Timers" } else { "Ringtone and Alerts" }
+    }
+
     @Environment(AlarmStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     @State var alarm: AlarmItem
@@ -63,26 +68,28 @@ struct AlarmEditor: View {
                 .listSectionSeparator(.hidden)
 
                 Section {
-                    Toggle("Loud mode", isOn: $alarm.loud)
-                    if alarm.loud {
-                        LabeledContent("Volume") {
-                            HStack(spacing: 12) {
-                                LevelBar(value: $alarm.loudVolume)
-                                    .accessibilityLabel("Volume")
-                                // Sized for "100%" so the bar keeps its width.
-                                Text("100%").hidden().overlay(alignment: .trailing) {
-                                    Text("\(Int((alarm.loudVolume * 100).rounded()))%")
-                                }
-                                .monospacedDigit()
-                                .accessibilityHidden(true)
+                    LabeledContent("Max volume") {
+                        HStack(spacing: 12) {
+                            LevelBar(value: $alarm.volume)
+                                .accessibilityLabel("Max volume")
+                            // Sized for "100%" so the bar keeps its width.
+                            Text("100%").hidden().overlay(alignment: .trailing) {
+                                Text("\(Int((alarm.volume * 100).rounded()))%")
                             }
+                            .monospacedDigit()
+                            .accessibilityHidden(true)
                         }
-                        Toggle("Fade in over 15 s", isOn: $alarm.fadeIn)
+                    }
+                    Picker("Fade in", selection: $alarm.fadeSeconds) {
+                        Text("Off").tag(Int?.none)
+                        ForEach(AlarmItem.fadeChoices, id: \.self) { seconds in
+                            Text(seconds < 60 ? "\(seconds) s" : "\(seconds / 60) min").tag(Int?.some(seconds))
+                        }
                     }
                 } header: {
                     Text("Volume").foregroundStyle(Color.ink2)
                 } footer: {
-                    Text("Rings at the volume set here, even when the ringer is quiet. Only works while OpenAlarm stays open in the background: keep the phone plugged in and don't swipe the app closed. Otherwise the alarm rings at ringer volume.")
+                    Text("On the Lock Screen the alarm rings up to this share of the system alarm volume, which apps can't change. For the loudest alarm, turn \(Self.systemVolumeName) all the way up in Settings → Sounds & Haptics. Once you open the app, it rings at medium volume.")
                         .foregroundStyle(Color.ink2)
                 }
                 .listRowBackground(Color.clear)
@@ -118,9 +125,6 @@ struct AlarmEditor: View {
                     .buttonStyle(InkButtonStyle())
                 }
                 .sharedBackgroundVisibility(.hidden)
-            }
-            .onChange(of: alarm.loud) { _, on in
-                if on { store.requestNotifications() }
             }
         }
     }

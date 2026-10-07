@@ -6,7 +6,7 @@ Small open-source iOS alarm app (Swift, SwiftUI, iOS 26+, no dependencies). It s
 
 ## Status
 
-- **Phase One (MVP): implemented** in `OpenAlarm/`. Alarm list, editor, sounds (bundled + imported), snooze limits, in-app ringing screen, nag loop, Loud mode.
+- **Phase One (MVP): implemented** in `OpenAlarm/`. Alarm list, editor, sounds (bundled + imported), snooze limits, in-app ringing screen, nag loop, per-alarm max volume and fade-in (baked into the AlarmKit sound).
 - **Phase Two (deep-sleeper tasks): not started.** Math, type text, odd tile out, QR scan, shake, walk. See the spec for task rules (inactivity timeout, fallback alarm, Skip after 3 fails held 5 s).
 - `OpenAlarm/Sounds/Beep.caf` is a synthesized placeholder. The user supplies the real freely licensed sounds. Do not source or generate sound files without asking.
 
@@ -15,11 +15,11 @@ Small open-source iOS alarm app (Swift, SwiftUI, iOS 26+, no dependencies). It s
 - `OpenAlarm/` – the app. Xcode uses file-system synchronized groups, so new files in this folder join the target automatically (no pbxproj edit). `Info.plist` is excluded from membership; other plist keys are generated via `INFOPLIST_KEY_*` build settings.
   - `OpenAlarmApp.swift` – entry point. Injects `AlarmStore.shared`, hosts the hidden `VolumeHack`, shows `RingingView` as a full-screen cover while `store.ringing != nil`, forwards scene phase changes.
   - `AlarmItem.swift` – `AlarmItem` (one alarm's settings; `nextFire`, `finishOccurrence`, `transientID`, `daysSummary`) and `Session` (the alarm currently ringing or snoozed, with snooze count).
-  - `AlarmStore.swift` – `@MainActor @Observable` singleton. Owns alarms + session, persistence, all AlarmKit calls, ringing logic, Loud-mode loop. Also `StopIntent` (the AlarmKit `stopIntent`: runs in the background to schedule the nag, then `continueInForeground` to open the app).
-  - `Audio.swift` – `Sounds` (bundled + `Library/Sounds` files, import) and `Audio` (in-app playback via `AVAudioPlayer`, silent keepalive, system volume via hidden `MPVolumeView`, 15 s fade-in). `VolumeHack` must stay in the view hierarchy.
+  - `AlarmStore.swift` – `@MainActor @Observable` singleton. Owns alarms + session, persistence, all AlarmKit calls, ringing logic. Also `StopIntent` (the AlarmKit `stopIntent`: runs in the background to schedule the nag, then `continueInForeground` to open the app).
+  - `Audio.swift` – `Sounds` (bundled + `Library/Sounds` files, import, and `rendered(_:fade:)`: per-alarm AAC renders with max volume and fade-in baked in, named `rendered-…` by their settings, pruned in `sync()`) and `Audio` (in-app playback via `AVAudioPlayer`, system volume via hidden `MPVolumeView`). `VolumeHack` must stay in the view hierarchy.
   - `AlarmListView.swift`, `AlarmEditor.swift` (includes `SoundPicker`), `RingingView.swift` – UI.
   - `Segments.swift` – the visual identity: palette (`lcd`, `ink`, `ink2`, `nightRed`, defined in code, no asset catalog), 7-segment digit shapes (`SegmentText`, `SegmentClock`), `Legend` annunciators, and `Segments.clock`/`label` for 12/24-hour formatting.
-  - `Controls.swift` – LCD replacements for stock iOS chrome: `LCDToggleStyle` (set on the root and again on the editor `Form`, because the sheet does not inherit it; it ignores `.labelsHidden()`, so pass an empty label plus `accessibilityLabel`), `LevelBar` (Loud volume), `TimeSetter` (editor time: looping segment-digit wheels, replaces the `DatePicker`), `InkButtonStyle` (toolbar Add/Save; pair with `.sharedBackgroundVisibility(.hidden)` to drop the glass).
+  - `Controls.swift` – LCD replacements for stock iOS chrome: `LCDToggleStyle` (set on the root and again on the editor `Form`, because the sheet does not inherit it; it ignores `.labelsHidden()`, so pass an empty label plus `accessibilityLabel`), `LevelBar` (alarm volume), `TimeSetter` (editor time: looping segment-digit wheels, replaces the `DatePicker`), `InkButtonStyle` (toolbar Add/Save; pair with `.sharedBackgroundVisibility(.hidden)` to drop the glass).
   - `SettingsView.swift` – Settings sheet (gear, top-left of the list): appearance tiles (System / Light / Dark, stored in `@AppStorage("appearance")`, applied as the window's `overrideUserInterfaceStyle` from `OpenAlarmApp`) and About (version). Author and donation link rows go here once the user supplies the URLs.
   - `Nightstand.swift` – nightstand mode (`NightstandHost` modifier on the root) and `AppDelegate`, which allows landscape only while charging with an enabled alarm. The simulator always reports charging.
 - `OpenAlarmTests/` – Swift Testing unit tests for pure logic only (`AlarmItem`, `Segments.clock`).
@@ -29,14 +29,14 @@ Small open-source iOS alarm app (Swift, SwiftUI, iOS 26+, no dependencies). It s
 ## How it works
 
 - **Persistence:** one JSON file, `Documents/alarms.json`, holding `alarms` and the current `session`. Written on every change (`persist()`). AlarmKit holds the schedule; the JSON holds everything else, linked by alarm UUID.
-- **Two AlarmKit alarms per item at most:** the main one (`id`, relative schedule, weekly or `.never` for one-shot) and a transient one (`transientID`, fixed date) used for nag, snooze and the Loud-mode fallback. `transientID` is `id` with the last byte flipped, so it is derivable without storage.
+- **Two AlarmKit alarms per item at most:** the main one (`id`, relative schedule, weekly or `.never` for one-shot) and a transient one (`transientID`, fixed date) used for nag, snooze and the fallback. `transientID` is `id` with the last byte flipped, so it is derivable without storage.
 - **`sync()`** makes AlarmKit match `alarms`: cancels orphans, then cancels and reschedules every alarm except the one in the active session. Called after every save/delete.
 - **Ringing flow:**
-  - AlarmKit fires. If the user slides Stop (or any other system dismissal), `StopIntent.perform` calls `externalStop`. It marks the session ringing and schedules the transient alarm 2 s later (60 s plus a local notification if Loud-mode audio is already playing).
-  - When the app becomes active, `takeOver()` stops any alerting AlarmKit alarm and the app plays the sound itself. A foreground AlarmKit alarm is only a banner, so the app must ring itself.
-  - Going to background while ringing: non-Loud alarms stop app audio and nag in 2 s; Loud alarms keep playing, notify, and set a 60 s fallback.
+  - AlarmKit fires. If the user slides Stop (or any other system dismissal), `StopIntent.perform` calls `externalStop`. It marks the session ringing and schedules the transient alarm 2 s later with the flat render (no fade).
+  - When the app becomes active, `takeOver()` stops any alerting AlarmKit alarm and the app plays the sound itself at medium volume (`min(volume, 0.5)`). A foreground AlarmKit alarm is only a banner, so the app must ring itself.
+  - Going to background while ringing: app audio stops, nag in 2 s.
   - `snooze()` increments the count and schedules the transient alarm at the snooze end. `stop()` clears the session, cancels the transient alarm, and calls `finishOccurrence()` (one-shot switches off), then `save()`.
-- **Loud mode:** while any enabled alarm is Loud, `Audio` plays silence in the background to keep the process alive (`UIBackgroundModes: audio`). `loudLoop()` wakes ~5 s before the next Loud event, cancels the main AlarmKit alarm, sets the transient alarm 60 s later as fallback, then plays the sound itself at the configured volume. Only one session exists at a time (marked with a `ponytail:` comment).
+- **Volume:** while the AlarmKit alert is up, it owns the audio at ringer volume; the app can't play over it or change its volume (verified on device, see the spec). So `AlarmItem.volume` (max, share of ringer volume) and `fadeSeconds` are baked into the file AlarmKit plays. No background audio mode. `AlarmItem.volume` is stored under the old JSON key `loudVolume`; old `fadeIn` is ignored (decodes as fade off).
 
 ## Decisions to keep
 
@@ -51,13 +51,13 @@ Small open-source iOS alarm app (Swift, SwiftUI, iOS 26+, no dependencies). It s
 ## Build and test
 
 - Open `OpenAlarm.xcodeproj`, scheme `OpenAlarm`. Bundle ID `com.osaravanja.openalarm`, team `42LC9M65RJ`, deployment target iOS 26.0, Swift 5 language mode.
-- Unit tests (11 tests, all pass as of 2026-10-04):
+- Unit tests (13 tests, all pass as of 2026-10-05):
   ```sh
   xcodebuild test -project OpenAlarm.xcodeproj -scheme OpenAlarm -destination 'platform=iOS Simulator,name=iPhone 17'
   ```
   The first run against a cold simulator can fail with "Simulator device failed to launch com.osaravanja.openalarm". Run it again.
-- Alarm behaviour (AlarmKit, lock screen, Loud mode, volume) cannot be tested in unit tests or reliably in the simulator. The user tests it by hand on a real device. Say so when a change needs device verification.
-- Tests cover pure logic only: next-fire date, one-shot auto-disable, and later math problem generation. Don't add UI or AlarmKit test scaffolding.
+- Alarm behaviour (AlarmKit, lock screen, volume, fade-in) cannot be tested in unit tests or reliably in the simulator. The user tests it by hand on a real device. Say so when a change needs device verification.
+- Tests cover pure logic only: next-fire date, one-shot auto-disable, sound rendering (fade and gain), and later math problem generation. Don't add UI or AlarmKit test scaffolding.
 
 ## Code style
 

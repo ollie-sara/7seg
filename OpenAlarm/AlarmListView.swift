@@ -107,7 +107,6 @@ private struct AlarmRow: View {
                     HStack(spacing: 12) {
                         Text(alarm.title).font(.headline).lineLimit(1)
                         Spacer()
-                        if alarm.loud { Legend("Loud", boxed: true) }
                         if alarm.days.isEmpty {
                             Legend("Once")
                         } else {
@@ -120,7 +119,7 @@ private struct AlarmRow: View {
             }
             .buttonStyle(.plain)
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel(Text("\(Text(alarm.timeOfDay, style: .time)), \(alarm.title), \(alarm.daysSummary)\(alarm.loud ? ", Loud mode" : "")"))
+            .accessibilityLabel(Text("\(Text(alarm.timeOfDay, style: .time)), \(alarm.title), \(alarm.daysSummary)"))
             .accessibilityHint("Edit alarm")
             .accessibilityAddTraits(.isButton)
 

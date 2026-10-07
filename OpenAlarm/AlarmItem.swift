@@ -13,9 +13,17 @@ struct AlarmItem: Codable, Identifiable, Equatable {
     var snoozeMinutes = 5
     /// nil = unlimited.
     var maxSnoozes: Int? = 3
-    var loud = false
-    var loudVolume = 1.0
-    var fadeIn = true
+    /// Peak loudness, 0…1, as a share of the ringer volume AlarmKit plays at.
+    var volume = 1.0
+    /// Fade-in from silence to `volume`. nil = off.
+    var fadeSeconds: Int? = 15
+
+    static let fadeChoices = [15, 30, 60, 120, 300]
+
+    private enum CodingKeys: String, CodingKey {
+        case id, hour, minute, label, days, enabled, sound, snoozeMinutes, maxSnoozes, fadeSeconds
+        case volume = "loudVolume" // saved before Loud mode was removed
+    }
 
     var title: String { label.isEmpty ? "Alarm" : label }
 
@@ -39,10 +47,18 @@ struct AlarmItem: Codable, Identifiable, Equatable {
         if days.isEmpty { enabled = false }
     }
 
-    /// Stable id for the second AlarmKit alarm (nag, snooze, Loud-mode fallback). Only one of those exists at a time.
+    /// Stable id for the second AlarmKit alarm (nag, snooze). Only one of those exists at a time.
     var transientID: UUID {
         var bytes = id.uuid
         bytes.15 ^= 0xFF
+        return UUID(uuid: bytes)
+    }
+
+    /// Stable id for the backup nag. It rings even when a dismissal never reaches `StopIntent`,
+    /// which happens for the side button while the passcode pad is up.
+    var backupID: UUID {
+        var bytes = id.uuid
+        bytes.14 ^= 0xFF
         return UUID(uuid: bytes)
     }
 

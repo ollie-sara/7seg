@@ -24,12 +24,12 @@ The alarm cannot be dismissed from the lock screen, side button, volume buttons,
 
 - Alarms are set in the evening, awake, often in bed.
 - Ringing happens in a dark room, user half-asleep.
-- Phone is usually plugged in overnight. Loud mode assumes the app stays open.
-- Nightstand mode: when the phone is landscape, charging, and an alarm is enabled, the app shows a time-only clock face, like a bedside alarm clock. The app may keep the screen awake, drop brightness to minimum, and restore it on exit. Keeping the app foregrounded also makes Loud mode more reliable.
+- Phone is usually plugged in overnight. Lock-Screen volume can only be a share of the ringer volume (no API).
+- Nightstand mode: when the phone is landscape, charging, and an alarm is enabled, the app shows a time-only clock face, like a bedside alarm clock. The app may keep the screen awake, drop brightness to minimum, and restore it on exit.
 
 ## Capabilities and Constraints
 
-Phase One (implemented): alarm list (add, edit, delete, toggle, sorted by time), editor (time, label, repeat weekdays, empty = one-shot, sound from bundled or imported files with preview, snooze duration 1–30 min, max snoozes 0–10 or unlimited, Loud mode with volume and 15 s fade-in), in-app ringing screen with Snooze and Stop, nag loop, AlarmKit authorization banner when denied.
+Phase One (implemented): alarm list (add, edit, delete, toggle, sorted by time), editor (time, label, repeat weekdays, empty = one-shot, sound from bundled or imported files with preview, snooze duration 1–30 min, max snoozes 0–10 or unlimited, max volume and fade-in from 15 s to 5 min, baked into the sound AlarmKit plays), in-app ringing screen with Snooze and Stop, nag loop, AlarmKit authorization banner when denied.
 
 Phase Two (planned): per-alarm ordered task list; silent while working on tasks with inactivity timeout (default 20 s); fallback alarm; Skip button after 3 failed attempts, held 5 s.
 

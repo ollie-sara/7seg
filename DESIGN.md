@@ -186,7 +186,7 @@ A two-tone LCD palette: one ground, one ink, one secondary ink, each with a ligh
 - **Headline** (headline): alarm label in rows.
 - **Body** (body): editor rows; weekday chips use body semibold.
 - **Secondary** (subheadline / footnote, Faded Ink): "Next" line, snoozes left, repeat summary.
-- **Legend** (caption, bold, 0.8pt tracking, uppercase): annunciators LOUD, ONCE, AL, AM/PM, the weekday strip, and the appearance-tile names.
+- **Legend** (caption, bold, 0.8pt tracking, uppercase): annunciators ONCE, AL, AM/PM, the weekday strip, and the appearance-tile names.
 
 ### Named Rules
 **The Segment-For-Time Rule.** A displayed clock time is drawn with `SegmentClock`, never with a text font. In prose lines (the "Next" line, legends) the time is plain text formatted by `Segments.label`, so "AL 06:30" matches the digits.
@@ -197,7 +197,7 @@ A two-tone LCD palette: one ground, one ink, one secondary ink, each with a ligh
 
 Plain native lists on the ground: `List` with `.plain` style, hidden content background, clear row backgrounds. Rows are separated by hairline rules (16% ink). Every `Form` sheet (editor, Settings) goes through `sheetForm()`: hidden scroll background on the bare ground, horizontal content margin 0 so rows share the list's 16pt gutter, 28pt between sections so each header reads with its own rows, clear row backgrounds, and hidden section separators (`listSectionSeparator(.hidden)`).
 
-Alarm row: segment time on the left, native switch top-right at the digit height; below, the label on the left and the legends on the right (LOUD boxed if on, then ONCE or the 7-day strip). Row vertical padding 6pt, 10pt between time and label line, 12pt between label-line items. Day strip cells are 15pt wide (scaled with caption) at fixed positions in locale weekday order.
+Alarm row: segment time on the left, native switch top-right at the digit height; below, the label on the left and the legends on the right (ONCE or the 7-day strip). Row vertical padding 6pt, 10pt between time and label line, 12pt between label-line items. Day strip cells are 15pt wide (scaled with caption) at fixed positions in locale weekday order.
 
 Ringing screen: 24pt padding. Portrait stacks face over buttons (24pt gap); landscape (compact height) puts them side by side (32pt gap, buttons max 320pt wide). Face: legend line on top, time, label, flexible space. Buttons stack 12pt apart.
 
@@ -253,7 +253,7 @@ Large and unambiguous for a half-asleep user.
 - The knob slides across in 0.2 s (snappy), with a selection haptic. Instant under Reduce Motion.
 - One VoiceOver element with the toggle trait and On/Off value.
 
-### Level Bar (Loud volume)
+### Level Bar (alarm volume)
 - Ten cells for 10–100%, 3pt apart, growing from 46% to 100% of the 28pt height toward loud. Lit cells full ink, the rest 7.5% (ghost).
 - Tap or drag sets the level in 10% steps. VoiceOver sees a native adjustable slider.
 - The percent sits right of the bar in a box sized for "100%", monospaced digits, so the bar never changes width.
@@ -268,8 +268,7 @@ Large and unambiguous for a half-asleep user.
 - Disabled alarms drop the whole row content to 35%.
 
 ### Legend (annunciator)
-- Caption bold, uppercase, 0.8pt tracking, ink. Boxed variant: 1.5pt ink stroke, 3pt corners, 4pt / 1pt padding (used for LOUD).
-- LOUD shows only when on, never ghosted, to keep rows calm.
+- Caption bold, uppercase, 0.8pt tracking, ink.
 
 ### Day Strip
 - All seven weekday letters in fixed positions, caption bold. Active days in full ink, others at 20%. One-shot alarms show the ONCE legend instead.

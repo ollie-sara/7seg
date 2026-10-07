@@ -2,14 +2,14 @@ import ActivityKit
 import AlarmKit
 import AppIntents
 import SwiftUI
-import UserNotifications
 
 struct OpenAlarmMetadata: AlarmMetadata {}
 
 /// Owns the alarms, the ringing session and everything AlarmKit is told.
 ///
-/// Per alarm, AlarmKit holds at most two alarms: the main one (id = `AlarmItem.id`, repeating or one-shot)
-/// and a transient one (`transientID`, fixed date) for nag, snooze and the Loud-mode fallback.
+/// Per alarm, AlarmKit holds at most three alarms: the main one (id = `AlarmItem.id`, repeating or one-shot)
+/// a transient one (`transientID`, fixed date) for nag and snooze, and a backup nag (`backupID`).
+/// AlarmKit plays a rendered copy of the sound with the alarm's volume and fade-in baked in (`Sounds.rendered`).
 @MainActor @Observable
 final class AlarmStore {
     static let shared = AlarmStore()
@@ -19,7 +19,6 @@ final class AlarmStore {
     private(set) var authorization = AlarmManager.shared.authorizationState
 
     @ObservationIgnored private var isActive = false
-    @ObservationIgnored private var loudTask: Task<Void, Never>?
 
     private struct Saved: Codable {
         var alarms: [AlarmItem]
@@ -86,7 +85,7 @@ final class AlarmStore {
         }
         alarms.removeAll { $0.id == id }
         try? AlarmManager.shared.cancel(id: alarm.id)
-        try? AlarmManager.shared.cancel(id: alarm.transientID)
+        cancelNags(alarm)
         persist()
         Task { await sync() }
     }
@@ -101,10 +100,8 @@ final class AlarmStore {
         session.snoozedUntil = until
         self.session = session
         persist()
-        Task {
-            await scheduleTransient(alarm, at: until)
-            restartLoud()
-        }
+        try? AlarmManager.shared.cancel(id: alarm.backupID)
+        Task { await scheduleTransient(alarm, at: until, fade: true) }
     }
 
     /// Ends this occurrence. A one-shot alarm switches off; a repeating one stays scheduled.
@@ -112,8 +109,7 @@ final class AlarmStore {
         guard let session, var alarm = alarm(session.alarmID) else { return }
         Audio.shared.stop()
         self.session = nil
-        try? AlarmManager.shared.cancel(id: alarm.transientID)
-        UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [alarm.id.uuidString])
+        cancelNags(alarm)
         alarm.finishOccurrence()
         save(alarm)
     }
@@ -121,41 +117,30 @@ final class AlarmStore {
     /// The system dismissed our alert: Stop slider, side or volume button, or swiping the app closed.
     /// The alarm isn't over, so it rings again in 2 s unless the app takes over first.
     func externalStop(_ id: UUID) async {
+        diag("externalStop active=\(isActive) ringing=\(ringing?.title ?? "-") alerts=\(((try? AlarmManager.shared.alarms) ?? []).map { "\($0.id == $0.id ? "" : "")\($0.state)" })") // DIAG
         guard let alarm = alarm(id) else { return }
         // Our own AlarmManager.stop in takeOver() can land here too; the app is already ringing then.
         if isActive && ringing?.id == id { return }
         markRinging(alarm)
-        if Audio.shared.isRinging {
-            // Loud mode keeps ringing by itself; AlarmKit is only the fallback.
-            notify(alarm)
-            await scheduleTransient(alarm, at: .now + 60)
-        } else {
-            await scheduleTransient(alarm, at: .now + 2)
-        }
+        await nag(alarm)
     }
 
     func scenePhaseChanged(_ phase: ScenePhase) {
+        diag("scenePhase \(phase)") // DIAG
         switch phase {
         case .active:
             isActive = true
             authorization = AlarmManager.shared.authorizationState
             takeOver()
             if let alarm = ringing {
-                try? AlarmManager.shared.cancel(id: alarm.transientID)
+                cancelNags(alarm)
                 if !Audio.shared.isRinging { play(alarm) }
             }
         case .background:
             isActive = false
             guard let alarm = ringing else { return }
-            Task {
-                if alarm.loud {
-                    notify(alarm)
-                    await scheduleTransient(alarm, at: .now + 60)
-                } else {
-                    Audio.shared.stop()
-                    await scheduleTransient(alarm, at: .now + 2)
-                }
-            }
+            Audio.shared.stop()
+            Task { await nag(alarm) }
         default:
             break
         }
@@ -164,12 +149,25 @@ final class AlarmStore {
     /// While the app is in front, AlarmKit only shows a banner, so the app stops it and rings itself.
     private func takeOver() {
         for alert in (try? AlarmManager.shared.alarms) ?? [] where alert.state == .alerting {
-            guard let alarm = alarms.first(where: { $0.id == alert.id || $0.transientID == alert.id }) else { continue }
+            guard let alarm = alarms.first(where: { [$0.id, $0.transientID, $0.backupID].contains(alert.id) }) else { continue }
             try? AlarmManager.shared.stop(id: alert.id)
             markRinging(alarm)
-            try? AlarmManager.shared.cancel(id: alarm.transientID)
-            play(alarm)
+            cancelNags(alarm)
+            if !Audio.shared.isRinging { play(alarm) }
         }
+    }
+
+    /// Rings again in 2 s, loud at once. The backup 10 s out covers a dismissal that never reaches `StopIntent`
+    /// (side button on the passcode pad); every dismissal that does reach it pushes both out again.
+    private func nag(_ alarm: AlarmItem) async {
+        await scheduleTransient(alarm, at: .now + 2, fade: false)
+        try? AlarmManager.shared.cancel(id: alarm.backupID)
+        await schedule(alarm, id: alarm.backupID, .fixed(.now + 10), fade: false)
+    }
+
+    private func cancelNags(_ alarm: AlarmItem) {
+        try? AlarmManager.shared.cancel(id: alarm.transientID)
+        try? AlarmManager.shared.cancel(id: alarm.backupID)
     }
 
     private func markRinging(_ alarm: AlarmItem) {
@@ -178,8 +176,9 @@ final class AlarmStore {
         persist()
     }
 
+    /// The app is open, so the user is awake enough: medium volume, or the alarm's max if that's lower.
     private func play(_ alarm: AlarmItem) {
-        Audio.shared.ring(alarm.sound, volume: alarm.loud ? alarm.loudVolume : nil, fadeIn: alarm.fadeIn)
+        Audio.shared.ring(alarm.sound, volume: min(alarm.volume, 0.5))
     }
 
     // MARK: AlarmKit
@@ -201,27 +200,31 @@ final class AlarmStore {
     /// Makes AlarmKit match `alarms`. The session's alarm is left alone; `stop()` hands it back here.
     func sync() async {
         let manager = AlarmManager.shared
-        let known = Set(alarms.flatMap { [$0.id, $0.transientID] })
+        let known = Set(alarms.flatMap { [$0.id, $0.transientID, $0.backupID] })
         for orphan in (try? manager.alarms) ?? [] where !known.contains(orphan.id) {
             try? manager.cancel(id: orphan.id)
         }
         for alarm in alarms where alarm.id != session?.alarmID {
             try? manager.cancel(id: alarm.id)
-            try? manager.cancel(id: alarm.transientID)
+            cancelNags(alarm)
             guard alarm.enabled else { continue }
             let weekdays: [Locale.Weekday] = [.sunday, .monday, .tuesday, .wednesday, .thursday, .friday, .saturday]
             let repeats: Alarm.Schedule.Relative.Recurrence = alarm.days.isEmpty ? .never : .weekly(alarm.days.sorted().map { weekdays[$0 - 1] })
-            await schedule(alarm, id: alarm.id, .relative(.init(time: .init(hour: alarm.hour, minute: alarm.minute), repeats: repeats)))
+            await schedule(alarm, id: alarm.id, .relative(.init(time: .init(hour: alarm.hour, minute: alarm.minute), repeats: repeats)), fade: true)
         }
-        restartLoud()
+        Sounds.pruneRendered(keeping: alarms)
     }
 
-    private func scheduleTransient(_ alarm: AlarmItem, at date: Date) async {
+    private func scheduleTransient(_ alarm: AlarmItem, at date: Date, fade: Bool) async {
         try? AlarmManager.shared.cancel(id: alarm.transientID)
-        await schedule(alarm, id: alarm.transientID, .fixed(date))
+        await schedule(alarm, id: alarm.transientID, .fixed(date), fade: fade)
     }
 
-    private func schedule(_ alarm: AlarmItem, id: UUID, _ schedule: Alarm.Schedule) async {
+    /// `fade`: use the alarm's fade-in. Off for the nag, which must be loud at once.
+    private func schedule(_ alarm: AlarmItem, id: UUID, _ schedule: Alarm.Schedule, fade: Bool) async {
+        let started = Date.now // DIAG
+        let sound = await Task.detached { Sounds.rendered(alarm, fade: fade) }.value
+        diag("schedule \(id == alarm.id ? "main" : id == alarm.backupID ? "backup" : "transient") fade=\(fade) render took \(Date.now.timeIntervalSince(started)) s") // DIAG
         let alert = AlarmPresentation.Alert(
             title: "\(alarm.title)",
             stopButton: AlarmButton(text: "Stop", textColor: .white, systemImageName: "stop.fill")
@@ -230,71 +233,12 @@ final class AlarmStore {
             schedule: schedule,
             attributes: AlarmAttributes(presentation: AlarmPresentation(alert: alert), tintColor: .orange),
             stopIntent: StopIntent(alarmID: alarm.id.uuidString),
-            sound: Sounds.url(alarm.sound) == nil ? .default : .named(alarm.sound)
+            sound: sound.map { .named($0) } ?? .default
         )
         do {
             _ = try await AlarmManager.shared.schedule(id: id, configuration: configuration)
         } catch {
             print("schedule error: \(error)")
-        }
-    }
-
-    // MARK: Loud mode
-
-    func requestNotifications() {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
-    }
-
-    /// Quick way back into the app while Loud mode rings without a lock-screen alert.
-    private func notify(_ alarm: AlarmItem) {
-        let content = UNMutableNotificationContent()
-        content.title = alarm.title
-        content.body = "Alarm ringing. Open OpenAlarm to snooze or stop."
-        UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: alarm.id.uuidString, content: content, trigger: nil))
-    }
-
-    private func restartLoud() {
-        loudTask?.cancel()
-        Audio.shared.setKeepalive(alarms.contains { $0.enabled && $0.loud })
-        loudTask = Task { await loudLoop() }
-    }
-
-    // ponytail: one session at a time. A Loud alarm due while another alarm rings or snoozes falls back to plain AlarmKit.
-    private func nextLoudEvent() -> (AlarmItem, Date)? {
-        if let session {
-            guard let until = session.snoozedUntil, let alarm = alarm(session.alarmID), alarm.loud else { return nil }
-            return (alarm, until)
-        }
-        return alarms.filter { $0.enabled && $0.loud }
-            .map { ($0, $0.nextFire(after: .now)) }
-            .min { $0.1 < $1.1 }
-    }
-
-    private func loudLoop() async {
-        while !Task.isCancelled {
-            guard let (alarm, date) = nextLoudEvent() else { return }
-            let wait = date.timeIntervalSinceNow - 5
-            if wait > 0 {
-                // Short naps so clock and time-zone changes are picked up.
-                try? await Task.sleep(for: .seconds(min(wait, 60)))
-                continue
-            }
-            // Push AlarmKit back a minute; it rings only if our own playback fails.
-            if session == nil {
-                try? AlarmManager.shared.cancel(id: alarm.id)
-                session = Session(alarmID: alarm.id, snoozedUntil: date)
-                persist()
-            }
-            await scheduleTransient(alarm, at: date + 60)
-            try? await Task.sleep(for: .seconds(max(0, date.timeIntervalSinceNow)))
-            if Task.isCancelled { return }
-            markRinging(alarm)
-            play(alarm)
-            if isActive {
-                try? AlarmManager.shared.cancel(id: alarm.transientID)
-            } else {
-                notify(alarm)
-            }
         }
     }
 
@@ -324,11 +268,26 @@ struct StopIntent: LiveActivityIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult {
-        if let id = UUID(uuidString: alarmID) {
-            await AlarmStore.shared.externalStop(id)
-        }
-        // Throws if the user doesn't unlock; the nag is already scheduled then.
-        try? await continueInForeground(alwaysConfirm: false)
-        return .result()
+        let run = UUID().uuidString.prefix(4) // DIAG
+        diag("StopIntent \(run) perform start") // DIAG
+        guard let id = UUID(uuidString: alarmID) else { return .result() }
+        await AlarmStore.shared.externalStop(id)
+        diag("StopIntent \(run) nag scheduled, throwing needsToContinueInForeground") // DIAG
+        // Thrown, not awaited: while one run waits on the passcode pad, iOS doesn't start the next one,
+        // so dismissing the nag from the pad would schedule nothing.
+        throw needsToContinueInForegroundError(alwaysConfirm: false)
+    }
+}
+
+/// DIAG: temporary. Appends to Documents/diag.log so device runs can be pulled with devicectl.
+func diag(_ message: String) {
+    let line = "\(Date.now.formatted(.iso8601.time(includingFractionalSeconds: true))) [\(UIApplication.shared.applicationState.rawValue)] \(message)\n"
+    let url = URL.documentsDirectory.appending(path: "diag.log")
+    if let handle = try? FileHandle(forWritingTo: url) {
+        handle.seekToEndOfFile()
+        handle.write(Data(line.utf8))
+        try? handle.close()
+    } else {
+        try? Data(line.utf8).write(to: url)
     }
 }
