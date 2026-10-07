@@ -3,6 +3,6 @@
 <plist version="1.0">
 <dict>
 	<key>NSAlarmKitUsageDescription</key>
-	<string>OpenAlarm schedules your alarms so they ring even in Silent mode and Focus.</string>
+	<string>7seg schedules your alarms so they ring even in Silent mode and Focus.</string>
 </dict>
 </plist>

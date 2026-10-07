@@ -1,11 +1,11 @@
 ---
 version: 1
-slug: "openalarm"
-primary_target: "OpenAlarm"
+slug: "sevenseg"
+primary_target: "SevenSeg"
 related_targets: []
 ---
 
-# OpenAlarm app surfaces
+# 7seg app surfaces
 
 Scope: whole app (alarm list, editor sheet, sound picker, ringing screen, nightstand mode, Phase Two task screens). Mode: Operate.
 

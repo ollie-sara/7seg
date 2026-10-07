@@ -1,5 +1,5 @@
 ---
-name: OpenAlarm
+name: 7seg
 description: An alarm you cannot dismiss half-asleep, drawn as an unlit 7-segment LCD clock.
 colors:
   lcd: "#C7CCB6"
@@ -120,7 +120,7 @@ components:
     typography: "{typography.segment}"
 ---
 
-# Design System: OpenAlarm
+# Design System: 7seg
 
 ## Overview
 

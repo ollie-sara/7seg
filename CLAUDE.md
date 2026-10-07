@@ -1,4 +1,4 @@
-# OpenAlarm
+# 7seg
 
 Small open-source iOS alarm app (Swift, SwiftUI, iOS 26+, no dependencies). It solves two problems: alarms must ring reliably, and the user must not be able to dismiss an alarm while half asleep. Snooze and Stop exist **only inside the app**. Any dismissal outside the app (lock-screen Stop slider, side or volume buttons, swiping the app closed) re-fires the alarm after ~2 s.
 
@@ -6,25 +6,25 @@ Small open-source iOS alarm app (Swift, SwiftUI, iOS 26+, no dependencies). It s
 
 ## Status
 
-- **Phase One (MVP): implemented** in `OpenAlarm/`. Alarm list, editor, sounds (bundled + imported), snooze limits, in-app ringing screen, nag loop, per-alarm max volume and fade-in (baked into the AlarmKit sound).
+- **Phase One (MVP): implemented** in `SevenSeg/`. Alarm list, editor, sounds (bundled + imported), snooze limits, in-app ringing screen, nag loop, per-alarm max volume and fade-in (baked into the AlarmKit sound).
 - **Phase Two (deep-sleeper tasks): not started.** Math, type text, odd tile out, QR scan, shake, walk. See the spec for task rules (inactivity timeout, fallback alarm, Skip after 3 fails held 5 s).
-- `OpenAlarm/Sounds/Beep.caf` is a synthesized placeholder. The user supplies the real freely licensed sounds. Do not source or generate sound files without asking.
+- `SevenSeg/Sounds/Beep.caf` is a synthesized placeholder. The user supplies the real freely licensed sounds. Do not source or generate sound files without asking.
 
 ## Layout
 
-- `OpenAlarm/` – the app. Xcode uses file-system synchronized groups, so new files in this folder join the target automatically (no pbxproj edit). `Info.plist` is excluded from membership; other plist keys are generated via `INFOPLIST_KEY_*` build settings.
-  - `OpenAlarmApp.swift` – entry point. Injects `AlarmStore.shared`, hosts the hidden `VolumeHack`, shows `RingingView` as a full-screen cover while `store.ringing != nil`, forwards scene phase changes.
+- `SevenSeg/` – the app. Xcode uses file-system synchronized groups, so new files in this folder join the target automatically (no pbxproj edit). `Info.plist` is excluded from membership; other plist keys are generated via `INFOPLIST_KEY_*` build settings.
+  - `SevenSegApp.swift` – entry point. Injects `AlarmStore.shared`, hosts the hidden `VolumeHack`, shows `RingingView` as a full-screen cover while `store.ringing != nil`, forwards scene phase changes.
   - `AlarmItem.swift` – `AlarmItem` (one alarm's settings; `nextFire`, `finishOccurrence`, `transientID`, `daysSummary`) and `Session` (the alarm currently ringing or snoozed, with snooze count).
   - `AlarmStore.swift` – `@MainActor @Observable` singleton. Owns alarms + session, persistence, all AlarmKit calls, ringing logic. Also `StopIntent` (the AlarmKit `stopIntent`: runs in the background to schedule the nag, then `continueInForeground` to open the app).
   - `Audio.swift` – `Sounds` (bundled + `Library/Sounds` files, import, and `rendered(_:fade:)`: per-alarm AAC renders with max volume and fade-in baked in, named `rendered-…` by their settings, pruned in `sync()`) and `Audio` (in-app playback via `AVAudioPlayer`, system volume via hidden `MPVolumeView`). `VolumeHack` must stay in the view hierarchy.
   - `AlarmListView.swift`, `AlarmEditor.swift` (includes `SoundPicker`), `RingingView.swift` – UI.
   - `Segments.swift` – the visual identity: palette (`lcd`, `ink`, `ink2`, `nightRed`, defined in code, no asset catalog), 7-segment digit shapes (`SegmentText`, `SegmentClock`), `Legend` annunciators, and `Segments.clock`/`label` for 12/24-hour formatting.
   - `Controls.swift` – LCD replacements for stock iOS chrome: `LCDToggleStyle` (set on the root and again on the editor `Form`, because the sheet does not inherit it; it ignores `.labelsHidden()`, so pass an empty label plus `accessibilityLabel`), `LevelBar` (alarm volume), `TimeSetter` (editor time: looping segment-digit wheels, replaces the `DatePicker`), `InkButtonStyle` (toolbar Add/Save; pair with `.sharedBackgroundVisibility(.hidden)` to drop the glass).
-  - `SettingsView.swift` – Settings sheet (gear, top-left of the list): appearance tiles (System / Light / Dark, stored in `@AppStorage("appearance")`, applied as the window's `overrideUserInterfaceStyle` from `OpenAlarmApp`) and About (version). Author and donation link rows go here once the user supplies the URLs.
+  - `SettingsView.swift` – Settings sheet (gear, top-left of the list): appearance tiles (System / Light / Dark, stored in `@AppStorage("appearance")`, applied as the window's `overrideUserInterfaceStyle` from `SevenSegApp`) and About (version). Author and donation link rows go here once the user supplies the URLs.
   - `Nightstand.swift` – nightstand mode (`NightstandHost` modifier on the root) and `AppDelegate`, which allows landscape only while charging with an enabled alarm. The simulator always reports charging.
-- `OpenAlarmTests/` – Swift Testing unit tests for pure logic only (`AlarmItem`, `Segments.clock`).
+- `SevenSegTests/` – Swift Testing unit tests for pure logic only (`AlarmItem`, `Segments.clock`).
 - `DESIGN.md` – the visual system (Unlit Glass: unlit LCD look, 7-segment digits). `PRODUCT.md` and `.impeccable/` hold the design context and the decision mockups.
-- `spike/` – throwaway device-verification app (`OpenAlarmSpike.xcodeproj`) and `spike/README.md` with raw spike results. Not part of the real app; don't extend it.
+- `spike/` – throwaway device-verification app (`SevenSegSpike.xcodeproj`) and `spike/README.md` with raw spike results. Not part of the real app; don't extend it.
 
 ## How it works
 
@@ -50,12 +50,12 @@ Small open-source iOS alarm app (Swift, SwiftUI, iOS 26+, no dependencies). It s
 
 ## Build and test
 
-- Open `OpenAlarm.xcodeproj`, scheme `OpenAlarm`. Bundle ID `com.osaravanja.openalarm`, team `42LC9M65RJ`, deployment target iOS 26.0, Swift 5 language mode.
+- Open `SevenSeg.xcodeproj`, scheme `SevenSeg`. Bundle ID `com.osaravanja.sevenseg`, team `42LC9M65RJ`, deployment target iOS 26.0, Swift 5 language mode.
 - Unit tests (13 tests, all pass as of 2026-10-05):
   ```sh
-  xcodebuild test -project OpenAlarm.xcodeproj -scheme OpenAlarm -destination 'platform=iOS Simulator,name=iPhone 17'
+  xcodebuild test -project SevenSeg.xcodeproj -scheme SevenSeg -destination 'platform=iOS Simulator,name=iPhone 17'
   ```
-  The first run against a cold simulator can fail with "Simulator device failed to launch com.osaravanja.openalarm". Run it again.
+  The first run against a cold simulator can fail with "Simulator device failed to launch com.osaravanja.sevenseg". Run it again.
 - Alarm behaviour (AlarmKit, lock screen, volume, fade-in) cannot be tested in unit tests or reliably in the simulator. The user tests it by hand on a real device. Say so when a change needs device verification.
 - Tests cover pure logic only: next-fire date, one-shot auto-disable, sound rendering (fade and gain), and later math problem generation. Don't add UI or AlarmKit test scaffolding.
 

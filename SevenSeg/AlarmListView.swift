@@ -13,7 +13,7 @@ struct AlarmListView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Label("Alarms won't ring", systemImage: "exclamationmark.triangle.fill")
                             .font(.headline)
-                        Text("OpenAlarm isn't allowed to schedule alarms. Turn on Alarms in Settings.")
+                        Text("7seg isn't allowed to schedule alarms. Turn on Alarms in Settings.")
                             .foregroundStyle(Color.ink2)
                         Button("Open Settings") { openURL(URL(string: UIApplication.openSettingsURLString)!) }
                             .bold()

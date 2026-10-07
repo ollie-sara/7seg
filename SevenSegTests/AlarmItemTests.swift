@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import OpenAlarm
+@testable import SevenSeg
 
 struct AlarmItemTests {
     let calendar: Calendar = {

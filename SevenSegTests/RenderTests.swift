@@ -1,7 +1,7 @@
 import AVFoundation
 import Foundation
 import Testing
-@testable import OpenAlarm
+@testable import SevenSeg
 
 struct RenderTests {
     /// 0.5 s of a quiet (0.25) 440 Hz sine, rendered at gain 0.5 with a 2 s fade into 4 s:

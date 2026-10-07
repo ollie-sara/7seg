@@ -1,11 +1,11 @@
-# OpenAlarm
+# 7seg
 
 ## Problem
 
 1. **Reliability.** People depend on their alarm, so it has to ring at the set time every time. Users report that the built-in Clock app sometimes doesn't.
 2. **Sleep dismissal.** Some users learn the motions for turning off an alarm so well that they do it without waking up. The result is the same as an alarm that never rang.
 
-Honest framing: a third-party app can't be more reliable than the OS scheduler it sits on. What we can do is (a) use the system alarm path (AlarmKit), not ordinary notifications, and (b) make dismissal require being awake. Problem 2 is where OpenAlarm actually adds value.
+Honest framing: a third-party app can't be more reliable than the OS scheduler it sits on. What we can do is (a) use the system alarm path (AlarmKit), not ordinary notifications, and (b) make dismissal require being awake. Problem 2 is where 7seg actually adds value.
 
 ## Proposed Solution
 
@@ -97,7 +97,7 @@ So the app does the same:
 | Shake | duration in seconds | CoreMotion accelerometer |
 | Walk | number of steps | CoreMotion `CMPedometer` |
 
-- **QR setup:** the app generates a unique code (`openalarm://<uuid>`) and saves it. The user prints or screenshots it and puts it somewhere away from the bed. Only a registered code completes the task, so any random QR code won't work.
+- **QR setup:** the app generates a unique code (`sevenseg://<uuid>`) and saves it. The user prints or screenshots it and puts it somewhere away from the bed. Only a registered code completes the task, so any random QR code won't work.
 - **Chaining:** a task list has no fixed length limit. The UI uses a plain reorderable list.
 - Walk and Shake require the Motion & Fitness permission. Ask for it only when one of those tasks is added.
 

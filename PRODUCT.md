@@ -14,7 +14,7 @@ The user is half-asleep, in a dark bedroom, often without glasses, at the moment
 
 ## Product Purpose
 
-OpenAlarm is a small open-source iOS alarm app. It solves two problems: alarms must ring reliably (AlarmKit, iOS 26+), and the user must not be able to dismiss an alarm while half-asleep. Snooze and Stop exist only inside the app; any outside dismissal re-fires the alarm after ~2 s. Success means the user is out of bed at the set time.
+7seg is a small open-source iOS alarm app. It solves two problems: alarms must ring reliably (AlarmKit, iOS 26+), and the user must not be able to dismiss an alarm while half-asleep. Snooze and Stop exist only inside the app; any outside dismissal re-fires the alarm after ~2 s. Success means the user is out of bed at the set time.
 
 ## Positioning
 
@@ -41,14 +41,14 @@ Localization: English now, more languages later. Layouts must survive longer str
 
 ## Brand Commitments
 
-- Name: OpenAlarm. Open source (MIT proposed).
+- Name: 7seg (renamed from OpenAlarm, which was unsearchable). Code identifiers use `SevenSeg`, since Swift names can't start with a digit. Open source (MIT proposed).
 - The user pinned the visual reference: an old-school 7-segment alarm clock without a backlight (unlit LCD), modern with a touch of retro. Dark and light mode both required.
 - No visuals without a specific purpose.
 
 ## Evidence on Hand
 
 - No logo, icon, or brand assets exist yet.
-- `OpenAlarm/Sounds/Beep.caf` is a placeholder; real sounds come from the user.
+- `SevenSeg/Sounds/Beep.caf` is a placeholder; real sounds come from the user.
 - No users, testimonials, or metrics exist. Do not invent them.
 
 ## Product Principles

@@ -4,8 +4,8 @@ Throwaway app for answering the four spikes in `docs/description.md`. Not part o
 
 ## Run it
 
-1. Open `OpenAlarmSpike.xcodeproj` in Xcode.
-2. Target OpenAlarmSpike → Signing & Capabilities → pick your Team. If the bundle ID is rejected, change it to something unique.
+1. Open `SevenSegSpike.xcodeproj` in Xcode.
+2. Target SevenSegSpike → Signing & Capabilities → pick your Team. If the bundle ID is rejected, change it to something unique.
 3. Connect the iPhone, select it as run destination, press Run.
 4. If Xcode says Developer Mode is off: on the phone, Settings → Privacy & Security → Developer Mode → on, restart, run again.
 5. First launch with a free account: Settings → General → VPN & Device Management → trust your developer certificate.

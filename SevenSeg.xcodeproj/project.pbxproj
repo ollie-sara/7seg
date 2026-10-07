@@ -12,37 +12,37 @@
 			containerPortal = B1000000000000000000000A /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = B10000000000000000000006;
-			remoteInfo = OpenAlarm;
+			remoteInfo = SevenSeg;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		B10000000000000000000001 /* OpenAlarm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenAlarm.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B10000000000000000000011 /* OpenAlarmTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OpenAlarmTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B10000000000000000000001 /* SevenSeg.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SevenSeg.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B10000000000000000000011 /* SevenSegTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SevenSegTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		B10000000000000000000030 /* Exceptions for "OpenAlarm" folder in "OpenAlarm" target */ = {
+		B10000000000000000000030 /* Exceptions for "SevenSeg" folder in "SevenSeg" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = B10000000000000000000006 /* OpenAlarm */;
+			target = B10000000000000000000006 /* SevenSeg */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		B10000000000000000000002 /* OpenAlarm */ = {
+		B10000000000000000000002 /* SevenSeg */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				B10000000000000000000030 /* Exceptions for "OpenAlarm" folder in "OpenAlarm" target */,
+				B10000000000000000000030 /* Exceptions for "SevenSeg" folder in "SevenSeg" target */,
 			);
-			path = OpenAlarm;
+			path = SevenSeg;
 			sourceTree = "<group>";
 		};
-		B10000000000000000000012 /* OpenAlarmTests */ = {
+		B10000000000000000000012 /* SevenSegTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = OpenAlarmTests;
+			path = SevenSegTests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -68,8 +68,8 @@
 		B10000000000000000000004 = {
 			isa = PBXGroup;
 			children = (
-				B10000000000000000000002 /* OpenAlarm */,
-				B10000000000000000000012 /* OpenAlarmTests */,
+				B10000000000000000000002 /* SevenSeg */,
+				B10000000000000000000012 /* SevenSegTests */,
 				B10000000000000000000005 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -77,8 +77,8 @@
 		B10000000000000000000005 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				B10000000000000000000001 /* OpenAlarm.app */,
-				B10000000000000000000011 /* OpenAlarmTests.xctest */,
+				B10000000000000000000001 /* SevenSeg.app */,
+				B10000000000000000000011 /* SevenSegTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -86,9 +86,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		B10000000000000000000006 /* OpenAlarm */ = {
+		B10000000000000000000006 /* SevenSeg */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B10000000000000000000007 /* Build configuration list for PBXNativeTarget "OpenAlarm" */;
+			buildConfigurationList = B10000000000000000000007 /* Build configuration list for PBXNativeTarget "SevenSeg" */;
 			buildPhases = (
 				B10000000000000000000008 /* Sources */,
 				B10000000000000000000003 /* Frameworks */,
@@ -99,18 +99,18 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				B10000000000000000000002 /* OpenAlarm */,
+				B10000000000000000000002 /* SevenSeg */,
 			);
-			name = OpenAlarm;
+			name = SevenSeg;
 			packageProductDependencies = (
 			);
-			productName = OpenAlarm;
-			productReference = B10000000000000000000001 /* OpenAlarm.app */;
+			productName = SevenSeg;
+			productReference = B10000000000000000000001 /* SevenSeg.app */;
 			productType = "com.apple.product-type.application";
 		};
-		B10000000000000000000016 /* OpenAlarmTests */ = {
+		B10000000000000000000016 /* SevenSegTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B10000000000000000000017 /* Build configuration list for PBXNativeTarget "OpenAlarmTests" */;
+			buildConfigurationList = B10000000000000000000017 /* Build configuration list for PBXNativeTarget "SevenSegTests" */;
 			buildPhases = (
 				B10000000000000000000018 /* Sources */,
 				B10000000000000000000013 /* Frameworks */,
@@ -122,13 +122,13 @@
 				B10000000000000000000021 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				B10000000000000000000012 /* OpenAlarmTests */,
+				B10000000000000000000012 /* SevenSegTests */,
 			);
-			name = OpenAlarmTests;
+			name = SevenSegTests;
 			packageProductDependencies = (
 			);
-			productName = OpenAlarmTests;
-			productReference = B10000000000000000000011 /* OpenAlarmTests.xctest */;
+			productName = SevenSegTests;
+			productReference = B10000000000000000000011 /* SevenSegTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -150,7 +150,7 @@
 					};
 				};
 			};
-			buildConfigurationList = B1000000000000000000000B /* Build configuration list for PBXProject "OpenAlarm" */;
+			buildConfigurationList = B1000000000000000000000B /* Build configuration list for PBXProject "SevenSeg" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -164,8 +164,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				B10000000000000000000006 /* OpenAlarm */,
-				B10000000000000000000016 /* OpenAlarmTests */,
+				B10000000000000000000006 /* SevenSeg */,
+				B10000000000000000000016 /* SevenSegTests */,
 			);
 		};
 /* End PBXProject section */
@@ -207,7 +207,7 @@
 /* Begin PBXTargetDependency section */
 		B10000000000000000000021 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = B10000000000000000000006 /* OpenAlarm */;
+			target = B10000000000000000000006 /* SevenSeg */;
 			targetProxy = B10000000000000000000020 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -253,8 +253,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 42LC9M65RJ;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = OpenAlarm/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = OpenAlarm;
+				INFOPLIST_FILE = SevenSeg/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "7seg";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -264,7 +264,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.osaravanja.openalarm;
+				PRODUCT_BUNDLE_IDENTIFIER = com.osaravanja.sevenseg;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -278,8 +278,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 42LC9M65RJ;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = OpenAlarm/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = OpenAlarm;
+				INFOPLIST_FILE = SevenSeg/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "7seg";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -289,7 +289,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.osaravanja.openalarm;
+				PRODUCT_BUNDLE_IDENTIFIER = com.osaravanja.sevenseg;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -303,10 +303,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 42LC9M65RJ;
 				GENERATE_INFOPLIST_FILE = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.osaravanja.openalarm.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.osaravanja.sevenseg.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = 1;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OpenAlarm.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/OpenAlarm";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SevenSeg.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SevenSeg";
 			};
 			name = Debug;
 		};
@@ -317,17 +317,17 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 42LC9M65RJ;
 				GENERATE_INFOPLIST_FILE = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.osaravanja.openalarm.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.osaravanja.sevenseg.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = 1;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OpenAlarm.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/OpenAlarm";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SevenSeg.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SevenSeg";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		B10000000000000000000007 /* Build configuration list for PBXNativeTarget "OpenAlarm" */ = {
+		B10000000000000000000007 /* Build configuration list for PBXNativeTarget "SevenSeg" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B1000000000000000000000E /* Debug */,
@@ -336,7 +336,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B1000000000000000000000B /* Build configuration list for PBXProject "OpenAlarm" */ = {
+		B1000000000000000000000B /* Build configuration list for PBXProject "SevenSeg" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B1000000000000000000000C /* Debug */,
@@ -345,7 +345,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B10000000000000000000017 /* Build configuration list for PBXNativeTarget "OpenAlarmTests" */ = {
+		B10000000000000000000017 /* Build configuration list for PBXNativeTarget "SevenSegTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B1000000000000000000001A /* Debug */,

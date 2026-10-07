@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		A10000000000000000000001 /* OpenAlarmSpike.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenAlarmSpike.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A10000000000000000000001 /* SevenSegSpike.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SevenSegSpike.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -40,7 +40,7 @@
 		A10000000000000000000005 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A10000000000000000000001 /* OpenAlarmSpike.app */,
+				A10000000000000000000001 /* SevenSegSpike.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,9 +48,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		A10000000000000000000006 /* OpenAlarmSpike */ = {
+		A10000000000000000000006 /* SevenSegSpike */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A10000000000000000000007 /* Build configuration list for PBXNativeTarget "OpenAlarmSpike" */;
+			buildConfigurationList = A10000000000000000000007 /* Build configuration list for PBXNativeTarget "SevenSegSpike" */;
 			buildPhases = (
 				A10000000000000000000008 /* Sources */,
 				A10000000000000000000003 /* Frameworks */,
@@ -63,11 +63,11 @@
 			fileSystemSynchronizedGroups = (
 				A10000000000000000000002 /* Spike */,
 			);
-			name = OpenAlarmSpike;
+			name = SevenSegSpike;
 			packageProductDependencies = (
 			);
-			productName = OpenAlarmSpike;
-			productReference = A10000000000000000000001 /* OpenAlarmSpike.app */;
+			productName = SevenSegSpike;
+			productReference = A10000000000000000000001 /* SevenSegSpike.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -85,7 +85,7 @@
 					};
 				};
 			};
-			buildConfigurationList = A1000000000000000000000B /* Build configuration list for PBXProject "OpenAlarmSpike" */;
+			buildConfigurationList = A1000000000000000000000B /* Build configuration list for PBXProject "SevenSegSpike" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -99,7 +99,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				A10000000000000000000006 /* OpenAlarmSpike */,
+				A10000000000000000000006 /* SevenSegSpike */,
 			);
 		};
 /* End PBXProject section */
@@ -174,7 +174,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.osaravanja.openalarm.spike;
+				PRODUCT_BUNDLE_IDENTIFIER = com.osaravanja.sevenseg.spike;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -200,7 +200,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.osaravanja.openalarm.spike;
+				PRODUCT_BUNDLE_IDENTIFIER = com.osaravanja.sevenseg.spike;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -211,7 +211,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A10000000000000000000007 /* Build configuration list for PBXNativeTarget "OpenAlarmSpike" */ = {
+		A10000000000000000000007 /* Build configuration list for PBXNativeTarget "SevenSegSpike" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A1000000000000000000000E /* Debug */,
@@ -220,7 +220,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A1000000000000000000000B /* Build configuration list for PBXProject "OpenAlarmSpike" */ = {
+		A1000000000000000000000B /* Build configuration list for PBXProject "SevenSegSpike" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A1000000000000000000000C /* Debug */,

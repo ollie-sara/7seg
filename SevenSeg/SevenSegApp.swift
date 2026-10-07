@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct OpenAlarmApp: App {
+struct SevenSegApp: App {
     @UIApplicationDelegateAdaptor private var appDelegate: AppDelegate
     @State private var store = AlarmStore.shared
     @Environment(\.scenePhase) private var scenePhase

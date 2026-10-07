@@ -3,7 +3,7 @@ import AlarmKit
 import AppIntents
 import SwiftUI
 
-struct OpenAlarmMetadata: AlarmMetadata {}
+struct SevenSegMetadata: AlarmMetadata {}
 
 /// Owns the alarms, the ringing session and everything AlarmKit is told.
 ///
@@ -229,7 +229,7 @@ final class AlarmStore {
             title: "\(alarm.title)",
             stopButton: AlarmButton(text: "Stop", textColor: .white, systemImageName: "stop.fill")
         )
-        let configuration = AlarmManager.AlarmConfiguration<OpenAlarmMetadata>.alarm(
+        let configuration = AlarmManager.AlarmConfiguration<SevenSegMetadata>.alarm(
             schedule: schedule,
             attributes: AlarmAttributes(presentation: AlarmPresentation(alert: alert), tintColor: .orange),
             stopIntent: StopIntent(alarmID: alarm.id.uuidString),
