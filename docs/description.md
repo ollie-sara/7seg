@@ -118,7 +118,7 @@ So the app does the same:
 - **Phase two frameworks:** VisionKit (QR scanning), CoreImage `CIQRCodeGenerator` (QR generation), CoreMotion (shake, steps).
 - **Dependencies:** none.
 - **Tests:** unit tests for the pure logic only: next-fire-date calculation, one-shot auto-disable, math problem generation. The alarm behaviour itself is tested by hand on a device.
-- **License:** MIT (proposed).
+- **License:** MIT (see `LICENSE`).
 - **Distribution:** source on GitHub. Personal use via TestFlight first, App Store release later, so build to App Store quality from the start (onboarding, permission texts, accessibility). A free Apple ID can sideload, but the app expires after 7 days, which is unacceptable for an alarm. Real use needs a paid developer account.
 
 ## Spikes (verify on a real device before building on them)

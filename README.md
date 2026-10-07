@@ -119,4 +119,4 @@ Before you open a pull request, run the unit tests and say whether the change ne
 
 ## License
 
-I haven't settled on a license yet, though it'll probably be MIT. Until there's a `LICENSE` file, please ask before reusing the code.
+7seg is released under the MIT License. See [LICENSE](LICENSE).

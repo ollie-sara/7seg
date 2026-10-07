@@ -41,7 +41,7 @@ Localization: English now, more languages later. Layouts must survive longer str
 
 ## Brand Commitments
 
-- Name: 7seg (renamed from OpenAlarm, which was unsearchable). Code identifiers use `SevenSeg`, since Swift names can't start with a digit. Open source (MIT proposed).
+- Name: 7seg (renamed from OpenAlarm, which was unsearchable). Code identifiers use `SevenSeg`, since Swift names can't start with a digit. Open source under the MIT License.
 - The user pinned the visual reference: an old-school 7-segment alarm clock without a backlight (unlit LCD), modern with a touch of retro. Dark and light mode both required.
 - No visuals without a specific purpose.
 
