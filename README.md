@@ -18,7 +18,7 @@ The look comes from an old LCD alarm clock without a backlight: 7-segment digits
   <img src="docs/screenshots/settings-dark.png" width="250" alt="Settings in dark mode: System, Light and Dark appearance tiles">
 </p>
 
-> Early days: version 0.1, not on the App Store or TestFlight yet.
+> Early days: version 0.1, not on the App Store or TestFlight yet. Large parts of the code were written with AI agents (Claude); see [Built with AI](#built-with-ai).
 
 ## What it does
 
@@ -110,6 +110,12 @@ They only cover the pure logic: when an alarm next rings, one-time alarms switch
 | `docs/description.md` | Product spec: phases, platform facts, device test results, out-of-scope list. |
 | `DESIGN.md`, `PRODUCT.md` | Visual system and product context. |
 | `spike/` | Throwaway app used to verify AlarmKit behaviour on a device before building on it. |
+
+## Built with AI
+
+Large parts of 7seg's code and docs were written by AI agents, mainly Claude via Claude Code. I made the product decisions, directed the work, and test the alarm behaviour by hand on a real iPhone. Still, read the code with that in mind, and please open an issue if something looks off.
+
+The instructions the agents work from are in [CLAUDE.md](CLAUDE.md).
 
 ## Contributing
 
